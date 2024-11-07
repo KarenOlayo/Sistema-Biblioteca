@@ -2,19 +2,21 @@ import numpy as np
 from Estante import Estante
 from Autor import Autor
 from Lector import Lector
-
+"""Hola gente"""
 class Biblioteca:
     
     def __init__(self, nombre, ubicacion, horario_atencion):
         self.__nombre = nombre
         self.__ubicacion = ubicacion
         self.__horario_atencion = horario_atencion
-        self.__bibliotecarios = []
+        self.__bibliotecario = []
         self.__estantes = np.full((5), fill_value=None, dtype=object)
         self.__numero_estantes = 0
         self.__autores = []
         self.__lectores = []
         self.__recibos = []
+
+#¿se almacena la informacion del bibliotecario en una lista?
 
 # Metodos Accesores
 
@@ -46,11 +48,12 @@ def buscar_estante(self, area_del_conocimiento):
             return None
 
 def agregar_estante(self, area_del_conocimiento):
+    estante = Estante(self, area_del_conocimiento)
     
     if self.buscar_estante(area_del_conocimiento) == None: #no esta registrado
-        estante = Estante(self, area_del_conocimiento)
         self.__estantes.append(estante)
 
+#¿crear el objeto antes o despues de validar que no esta registrado?
 
 def buscar_autor(self, nombre, apellido):
     for i in self.__autores :
@@ -59,10 +62,14 @@ def buscar_autor(self, nombre, apellido):
         else:
             return None
         
+#las listas tienen posicion -1 ¿es correcto retornar un objeto?
+
 def agregar_autor(self, nombre, apellido, fecha_nacimiento, pais_origen, fecha_fallecimiento=None):
     autor = Autor(self, nombre, apellido, fecha_nacimiento, pais_origen, fecha_fallecimiento)
     if self.__autores.buscar_autor(nombre, apellido) == None : #no esta registrado
         self.__autores.append(autor)
+
+#¿crear el objeto antes o despues de validar que no esta registrado?
 
 def buscar_lector(self, identificacion):
     for i in self.__lectores:
@@ -77,6 +84,8 @@ def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, ema
     
     if self.__lectores.buscar_lector() == None :
         self.__lectores.append(lector)
+
+#¿crear el objeto antes o despues de validar que no esta registrado?
 
 def eliminar_lector(self, identificacion):
     pass

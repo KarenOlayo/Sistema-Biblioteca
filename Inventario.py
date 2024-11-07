@@ -63,7 +63,7 @@ def retirar_libro(self, titulo, codigo_isbn):
     if posicion_libro != -1:
         for i in range(posicion_libro, self.__nro_libros, 1):
             self.__libros[i] = self.__libros[i+1]
-        self.__libros[i+1] == None
+        self.__libros[i-1] == None
         self.__nro_libros -= 1
 
 # modificar para si se retira un libro y todos sus ejemplares o solo un ejemplar

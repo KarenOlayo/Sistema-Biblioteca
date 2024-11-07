@@ -1,5 +1,13 @@
-from DataInicial import TIPOS_DE_RECIBOS
 class Recibo:
+    
+    TIPOS_DE_RECIBOS = [
+    "Adicion de Libros",
+    "Retiro de Libros",
+    "Prestamo de Libros",
+    "Renovacion de Prestamo",
+    "Reserva de Libros",
+    "Devolucion de Libros"
+    ]
     
     def __init__(self, tipo):
         
