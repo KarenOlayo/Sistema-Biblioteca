@@ -2,7 +2,7 @@ import numpy as np
 from Estante import Estante
 from Autor import Autor
 from Lector import Lector
-
+"""Hola gente"""
 class Biblioteca:
     
     def __init__(self, nombre, ubicacion, horario_atencion):
