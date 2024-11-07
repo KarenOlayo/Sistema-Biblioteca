@@ -1,43 +1,16 @@
+from DataInicial import AREAS_DEL_CONOCIMIENTO
+from DataInicial import GENEROS_LITERATURA
+from DataInicial import GENEROS_NO_LITERATURA
+
 class Libro:
     
-    AREAS_DEL_CONOCIMIENTO = [
-        "Ciencias Sociales",
-        "Ciencias Humanas",
-        "Ciencias Exactas",
-        "Ciencias Políticas",
-        "Literatura"
-    ]
-    
-    GENEROS_LITERATURA = [
-    "Ciencia Ficción",
-    "Fantasía",
-    "Romance",
-    "Aventura",
-    "Comedia",
-    "Infantil",
-    "Religioso",
-    "Poesía",
-    "Ilustrado"
-    ]
-
-    GENEROS_NO_LITERATURA = [
-    "Ensayo",
-    "Didáctico",
-    "Investigación",
-    "Histórico",
-    "Práctico",
-    "Diccionario",
-    "Enciclopedia"
-    ]
-
     ORIGEN_LIBRO = ["Donacion","Adquirido por la Biblioteca"]
     
     def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, nro_ejemplares, fecha_publicacion, editorial, origen):
         
         self.__titulo = titulo
         self.__codigo_isbn = codigo_isbn
-        self.__autor = [] #¿Se debe almacenar en una lista, indicar el nombre directamente o ...?
-
+        self.__autor = [] 
         
         if area_del_conocimiento in Libro.AREAS_DEL_CONOCIMIENTO:
             self.__area_del_conocimiento = area_del_conocimiento

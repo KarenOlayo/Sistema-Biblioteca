@@ -1,14 +1,6 @@
 import numpy as np
-
+from DataInicial import AREAS_DEL_CONOCIMIENTO
 class Estante:
-    
-    AREAS_DEL_CONOCIMIENTO = [
-        "Ciencias Sociales",
-        "Ciencias Humanas",
-        "Ciencias Exactas",
-        "Ciencias Políticas",
-        "Literatura"
-    ]
     
     def __init__(self, area_del_conocimiento):
         
