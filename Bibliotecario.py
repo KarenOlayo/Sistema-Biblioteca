@@ -6,7 +6,6 @@ class Bibliotecario(Persona):
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__identificacion = identificacion
         self.__email = email
-        self.__biblioteca_asignada = biblioteca_asignada
 
 # Metodos Accesores
 

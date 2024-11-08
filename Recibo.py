@@ -4,7 +4,7 @@ class Recibo:
     def __init__(self, tipo):
         
         while True:
-            if tipo in Recibo.TIPOS_DE_RECIBOS:
+            if tipo in TIPOS_DE_RECIBOS:
                 self.__tipo = tipo
                 break
             else:

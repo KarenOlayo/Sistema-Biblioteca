@@ -9,15 +9,12 @@ class Autor(Persona):
         
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__fecha_fallecimiento = fecha_fallecimiento
-        
-        while True:
-            if pais_origen in Autor.PAISES:
-                self.__pais_origen = pais_origen
-                break
-            else:
-                print(f"El pais de origen {pais_origen} no es válido. Intente nuevamente.")
-                
         self.__obras_literarias =  []
+        
+        if pais_origen in Autor.PAISES:
+            self.__pais_origen = pais_origen
+        else:
+            print(f"El pais de origen {pais_origen} no es válido. Intente nuevamente.")
 
 # Metodos Accesores
     
