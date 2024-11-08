@@ -1,35 +1,37 @@
 from DataInicial import AREAS_DEL_CONOCIMIENTO
 from DataInicial import GENEROS_LITERATURA
 from DataInicial import GENEROS_NO_LITERATURA
+from DataInicial import ORIGEN_LIBRO
+from DataInicial import ESTADO_LIBRO
 
 class Libro:
     
-    ORIGEN_LIBRO = ["Donacion","Adquirido por la Biblioteca"]
-    
-    def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, nro_ejemplares, fecha_publicacion, editorial, origen):
+    def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado):
         
         self.__titulo = titulo
         self.__codigo_isbn = codigo_isbn
+        self.__estado = estado
         self.__autor = [] 
         
-        if area_del_conocimiento in Libro.AREAS_DEL_CONOCIMIENTO:
+        if area_del_conocimiento in AREAS_DEL_CONOCIMIENTO:
             self.__area_del_conocimiento = area_del_conocimiento
                 
             if area_del_conocimiento == "Literatura":
-                if genero in Libro.GENEROS_LITERATURA:
+                if genero in GENEROS_LITERATURA:
                     self.__genero = genero
             else:
-                if genero in Libro.GENEROS_NO_LITERATURA:
+                if genero in GENEROS_NO_LITERATURA:
                     self.__genero = genero
+        
+        if origen in ORIGEN_LIBRO:
+            self.__origen = origen
+        
+        if estado in ESTADO_LIBRO:
+            self.__estado = estado
             
         self.__nro_paginas = nro_paginas
-        self.__nro_ejemplares = nro_ejemplares
         self.__fecha_publicacion = fecha_publicacion
-        self.__editorial = editorial
         
-        if origen in Libro.ORIGEN_LIBRO:
-            self.__origen = origen
-
 #Metodos accesores
 
 def get_titulo(self):
@@ -50,17 +52,14 @@ def get_genero(self):
 def get_nro_paginas(self):
     return self.__nro_paginas
 
-def get_nro_ejemplares(self):
-    return self.__nro_ejemplares
-
 def get_fecha_publicacion(self):
     return self.__fecha_publicacion
 
-def get_editorial(self):
-    return self.__editorial
-
 def  get_origen(self):
     return self.__origen
+
+def get_estado(self):
+    return self.__estado
 
 #Metodos Modificadores
 
@@ -82,14 +81,11 @@ def set_genero(self, nuevo_genero):
 def set_nro_paginas(self,nuevo_nro_paginas):
     self.__nro_paginas = nuevo_nro_paginas
 
-def  set_nro_ejemplares(self, nuevo_nro_ejemplares):
-    self.__nro_ejemplares = nuevo_nro_ejemplares
-
 def  set_fecha_publicacion(self, nueva_fecha_publicacion):
     self.__fecha_publicacion = nueva_fecha_publicacion
 
-def set_editorial(self, nueva_editorial):
-    self.__editorial = nueva_editorial
-
 def set_origen(self, nuevo_origen):
     self.__origen = nuevo_origen
+
+def set_estado(self, nuevo_estado):
+    self.__estado = nuevo_estado

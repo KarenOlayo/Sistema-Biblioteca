@@ -36,3 +36,13 @@ TIPOS_DE_RECIBOS = [
     "Reserva de Libros",
     "Devolucion de Libros"
 ]
+
+ORIGEN_LIBRO = [
+    "Donacion",
+    "Adquirido por la Biblioteca"
+]
+
+ESTADO_LIBRO = [
+    "Prestado"
+    "Disponible"
+]
