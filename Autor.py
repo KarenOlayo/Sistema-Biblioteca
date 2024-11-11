@@ -14,20 +14,23 @@ class Autor(Persona):
         if pais_origen in Autor.PAISES:
             self.__pais_origen = pais_origen
         else:
-            print(f"El pais de origen {pais_origen} no es válido. Intente nuevamente.")
+            print(f"El pais de origen {pais_origen} no es válido.")
 
-# Metodos Accesores
-    
-def get_fecha_fallecimiento(self):
-    return self.__fecha_fallecimiento
-    
-def set_pais_origen(self):
-    return self.__pais_origen
-    
-# Metodos Modificadores
-    
-def set_fecha_fallecimiento(self, fecha_fallecimiento):
-    self.__fecha_fallecimiento = fecha_fallecimiento
-    
-def set_pais_origen(self, nuevo_pais_origen):
-    self.__pais_origen = nuevo_pais_origen
+    # Metodos Accesores
+        
+    def get_pais_origen(self):
+        return self.__pais_origen
+        
+    def get_fecha_fallecimiento(self):
+        return self.__fecha_fallecimiento
+
+    def get_obras_literarias(self):
+        return self.__obras_literarias
+
+    # Metodos Modificadores
+        
+    def set_fecha_fallecimiento(self, fecha_fallecimiento):
+        self.__fecha_fallecimiento = fecha_fallecimiento
+        
+    def set_pais_origen(self, nuevo_pais_origen):
+        self.__pais_origen = nuevo_pais_origen

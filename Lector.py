@@ -10,36 +10,45 @@ class Lector(Persona):
         self.__historial_prestamos = []
         self.__prestamos_vigentes = []
         self.__multas_vigentes = []
-        self.__multas_totales = 0
+        self.__nro_multas = 0
 
-# Metodos Accesores
+    # Metodos Accesores
 
-def get_identificacion(self):
-    return self.__identificacion
+    def get_identificacion(self):
+        return self.__identificacion
+    
+    def get_email(self):
+        return self.__email
+    
+    def get_historial_prestamos(self):
+        return self.__historial_prestamos
 
-def get_email(self):
-    return self.__email
+    def get_prestamos_vigentes(self):
+        return self.__prestamos_vigentes
+    
+    def get_multas_vigentes(self):
+        return self.__multas_vigentes
+    
+    def get_nro_multas(self):
+        return self.__nro_multas
 
-def biblioteca_asignada(self):
-    return self.__biblioteca_asignada
+    # Metodos  Modificadores
 
-def get_prestamos_vigentes(self):
-    return self.__prestamos_vigentes
+    def set_identificacion(self, nueva_identificacion):
+        self.__identificacion = nueva_identificacion
 
-# Metodos  Modificadores
+    def  set_email(self, nuevo_email):
+        self.__email = nuevo_email
+    
+    def set_nro_multas(self):
+        self.__nro_multas += 1
+    
+    # Metodo para verificar si el lector cumple con los requisitos para prestar un libro
 
-def set_identificacion(self, nueva_identificacion):
-    self.__identificacion = nueva_identificacion
-
-def  set_email(self, nuevo_email):
-    self.__email = nuevo_email
-
-# 
-
-def verificar_requisitos_prestamo(self):
-    if len(self.__multas_vigentes) == 0:
-        if len(self.__prestamos_vigentes) < 3:
-            if self.__multas_totales < 3:
-                return True
-    else:
-        return False
+    def verificar_requisitos_prestamo(self):
+        if len(self.__multas_vigentes) == 0:
+            if len(self.__prestamos_vigentes) < 3:
+                if self.__nro_multas < 3:
+                    return True
+        else:
+            return False
