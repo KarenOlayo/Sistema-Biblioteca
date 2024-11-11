@@ -4,7 +4,7 @@ class Multa:
     def __init__(self, fecha_inicio, fecha_fin):
         self.__fecha_inicio = fecha_inicio
         self.__fecha_fin = fecha_fin
-        self.__lector = []
+        self.__lector = [] #se almacena en una lista?
 
 # Metodos Accesores y Modificadores
 
@@ -13,6 +13,15 @@ def get_fecha_inicio(self):
 
 def get_fecha_fin(self):
     return self.__fecha_fin
+
+def get_lector(self):
+    return self.__lector
+
+def set_fecha_inicio(self, nueva_fecha_inicio):
+    self.__fecha_inicio= nueva_fecha_inicio
+
+def set_fecha_fin(self, nueva_fecha_fin):
+    self.__fecha_fin = nueva_fecha_fin
 
 def calcular_multa(self):
     pass

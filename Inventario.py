@@ -1,6 +1,7 @@
 import numpy as np
 from Libro import Libro
 from Lector import Lector
+from Biblioteca import Biblioteca
 
 class Inventario:
     
@@ -19,41 +20,28 @@ class Inventario:
                     self.__libros_prestados.append(self.__libros[i])
                 
     def buscar_libro(self, titulo, codigo_isbn): 
-        for i in range(0, self.__nro_libros, 1):
-            if self.__libros[i] is not None and self.__libros[i].get_titulo() == titulo or self.__libros[i].get_codigo_isbn() == codigo_isbn:
-                return i
-            else:
-                return -1
+        for indice, libro in enumerate(self.__libros):
+            if indice >= self.__nro_libros: #¿>= o > ?
+                break
+            if libro is not None and (libro.get_titulo() == titulo or libro.get_codigo_isbn() == codigo_isbn):
+                return indice, libro # retorna el indice y el objeto
+        return -1 , None 
 
     def agregar_libro(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado="Disponible"):
-        
-        libro = Libro(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado)
-        
-        if self.__libros.buscar_libro(self, titulo, codigo_isbn) == -1:
+        _, libro = self.buscar_libro(titulo, codigo_isbn)
+        if libro is None:
             if self.__nro_libros < len(self.__libros):
-                self.__libros[self.__nro_libros] = libro
-                self.__nro_libros += 1
+                libro = Libro(titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado)
+                self.__libros[self.__nro_libros] = libro 
+                self.__nro_libros += 1 
                 self.agregar_libro_estante(area_del_conocimiento, libro)
-                    
-            else:
-                libro.self__nro_ejemplares += nro_ejemplares
-                self.__nro_libros += nro_ejemplares
-                self.agregar_libro_estante(self, area_del_conocimiento, libro)
                 
     def agregar_libro_estante(self, area_del_conocimiento, libro:object):
-        
-        estante = self.__estantes.buscar_estante(area_del_conocimiento) #retorna un objeto
-        
-        titulo = libro.get_titulo()
-        codigo_isbn = libro.get_codigo_isbn()
-        posicion_libro = self.buscar_libro(self, titulo, codigo_isbn)
-        
-        if estante.get_nro_libros_estante() < len(estante):
-            if posicion_libro == -1 : 
-                self.__libros_estante[self.__nro_libros_estante] = libro
-                self.__nro_libros_estante += self.__nro_ejemplares
-            else: 
-                self.__nro_libros_estante += self.__nro_ejemplares
+        _, estante = self.buscar_estante(area_del_conocimiento) #buscar estante es metodo de la clase Biblioteca
+        if estante is not None:
+            if estante.get_nro_libros_estante() < len(estante.get_libros_estante()):
+                estante.get_libros_estante()[estante.get_nro_libros_estante()] = libro
+                estante.set_nro_libros_estante() #suma 1 al nro de libros del estante
 
     def retirar_libro(self, titulo, codigo_isbn):
         

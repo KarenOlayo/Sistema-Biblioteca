@@ -1,7 +1,8 @@
 import numpy as np
 from Estante import Estante
-from Autor import Autor
+from Bibliotecario import Bibliotecario
 from Lector import Lector
+from Autor import Autor
 
 class Biblioteca:
     
@@ -9,11 +10,11 @@ class Biblioteca:
         self.__nombre = nombre
         self.__ubicacion = ubicacion
         self.__horario_atencion = horario_atencion
-        self.__bibliotecarios = []
         self.__estantes = np.full((5), fill_value=None, dtype=object)
         self.__nro_estantes = 0
-        self.__autores = []
+        self.__bibliotecarios = []
         self.__lectores = []
+        self.__autores = []
         self.__recibos = []
 
     # Metodos Accesores
@@ -26,6 +27,24 @@ class Biblioteca:
 
     def  get_horario_atencion(self):
         return self.__horario_atencion
+    
+    def get_estantes(self):
+        return self.__estantes
+    
+    def get_nro_estantes(self):
+        return self.__nro_estantes
+    
+    def get_bibliotecarios(self):
+        return self.__bibliotecarios
+    
+    def get_lectores(self):
+        return self.__lectores
+    
+    def get_autores(self):
+        return self.__autores
+    
+    def get_recibos(self):
+        return self.__recibos
 
     # Metodos  Modificadores
 
@@ -40,49 +59,74 @@ class Biblioteca:
 
     # Metodos de busqueda
 
-    def buscar_estante(self, area_del_conocimiento):
-        for i in self.__estantes:
-            if self.__estantes[i] is not None and self.__estantes[i].get_area_del_conocimiento() == area_del_conocimiento:
-                return self.__estantes[i]
-            else:
-                return None
+    def buscar_estante(self, area_del_conocimiento): 
+        for indice, estante in enumerate(self.__estantes):
+            if estante is not None and estante.get_area_del_conocimiento() == area_del_conocimiento:
+                return indice , estante # retorna la posicion y el objeto
+        return -1, None
+    
+    def buscar_bibliotecario(self, identificacion):
+        for bibliotecario in self.__bibliotecarios:
+            if bibliotecario.get_identificacion() == identificacion:
+                return bibliotecario # retorna un objeto
+        return None
+    
+    def buscar_lector(self, identificacion):
+        for lector in self.__lectores:
+            if lector.get_identificacion() == identificacion:
+                return lector # retorna un objeto
+        return None
 
     def buscar_autor(self, nombre, apellido):
-        for i in self.__autores :
-            if self.__autores[i].get_nombre() == nombre and self.__autores[i].get_apellido() == apellido:
-                return self.__autores[i]
-            else:
-                return None
-
-    def buscar_lector(self, identificacion):
-        for i in self.__lectores:
-            if self.__lectores[i].get_identificacion() == identificacion:
-                return self.__lectores[i]
-            else:
-                return None
+        for autor in self.__autores :
+            if autor.get_nombre() == nombre and autor.get_apellido() == apellido:
+                return autor # retorna un objeto
+        return None
             
     # Metodos de agregacion
 
     def agregar_estante(self, area_del_conocimiento):
-        if self.buscar_estante(area_del_conocimiento) == None:
-            estante = Estante(self, area_del_conocimiento)
-            self.__estantes[self.__nro_estantes] = estante
-            print("Estante agregado.")
-        else:
-            print(f"{area_del_conocimiento} no es valido")
+        _, estante = self.buscar_estante(area_del_conocimiento)
+        if estante is None:
+            if self.__nro_estantes < len(self.__estantes):
+                estante = Estante(area_del_conocimiento)
+                self.__estantes[self.__nro_estantes] = estante
+                self.__nro_estantes += 1
+    
+    def agregar_bibliotecario(self, nombre, apellido, fecha_nacimiento, identificacion, email):
+        if self.buscar_bibliotecario(identificacion) == None:
+            bibliotecario = Bibliotecario(self, nombre, apellido, fecha_nacimiento, identificacion, email)
+            self.__bibliotecarios.append(bibliotecario)
 
     def agregar_autor(self, nombre, apellido, fecha_nacimiento, pais_origen, fecha_fallecimiento=None):
-        if self.__autores.buscar_autor(nombre, apellido) == None : 
+        if self.buscar_autor(nombre, apellido) == None : 
             autor = Autor(self, nombre, apellido, fecha_nacimiento, pais_origen, fecha_fallecimiento)
             self.__autores.append(autor)
 
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
-        
-        if self.__lectores.buscar_lector() == None :
+        if self.buscar_lector() == None :
             lector = Lector(self, nombre, apellido, fecha_nacimiento, identificacion, email)
             self.__lectores.append(lector)
 
     # Metodos de eliminacion
 
+    def eliminar_estante(self, area_del_conocimiento):
+        indice , estante = self.buscar_estante(area_del_conocimiento)
+        if estante is not None:
+            self.__estantes[indice] = None
+            self.__nro_estantes -= 1
+    
+    def eliminar_bibliotecario(self, identificacion):
+        bibliotecario = self.buscar_bibliotecario(identificacion)
+        if bibliotecario is not None:
+            self.__bibliotecarios.remove(bibliotecario)
+            
     def eliminar_lector(self, identificacion):
-        pass
+        lector = self.buscar_lector(identificacion)
+        if lector is not None:
+            self.__lectores.remove(lector)
+
+    def eliminar_autor(self, nombre, apellido):
+        autor = self.buscar_autor(nombre, apellido)
+        if autor is not None:
+            self.__autores.remove(autor)       

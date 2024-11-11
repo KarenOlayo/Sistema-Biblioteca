@@ -12,7 +12,7 @@ class Estante:
         self.__libros_estante = np.full((100), fill_value=None, dtype=object)
         self.__nro_libros_estante = 0
         
-        #Preguntas: Como maximo, un estante tendra 100 libros ¿Se debera poner una variable con este valor,
+        #Pregunta: Como maximo, un estante tendra 100 libros ¿Se debera poner una variable con este valor,
         #para hacer la validacion a la hora de agregar un libro o hacerla con el numero directamente?
 
     # Metodos accesores
@@ -22,8 +22,14 @@ class Estante:
 
     def get_nro_libros_estante(self):
         return self.__nro_libros_estante
+    
+    def get_libros_estante(self):
+        return self.__libros_estante
 
     # Metodos modificadores
 
     def set_area_del_conocimiento(self, nueva_area_del_conocimiento):
         self.area_del_conocimiento = nueva_area_del_conocimiento
+    
+    def set_nro_libros_estante(self):
+        self.__nro_libros_estante += 1
