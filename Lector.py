@@ -2,6 +2,7 @@ import numpy as np
 from Persona import Persona
 from Libro import Libro
 from Multa import Multa
+from Prestamo import Prestamo
 import datetime
 from email_validator import validate_email, EmailNotValidError
 
@@ -112,4 +113,6 @@ class Lector(Persona):
                     self.__prestamos_vigentes[j] = self.__prestamos_vigentes[j+1]
                 self.__prestamos_vigentes[self.__nro_prestamos_vigentes-1] = None
                 self.__nro_prestamos_vigentes -= 1
-                
+
+        
+        
