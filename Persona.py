@@ -1,6 +1,8 @@
+import datetime
+
 class Persona:
     
-    def __init__(self, nombre, apellido, fecha_nacimiento):
+    def __init__(self, nombre, apellido, fecha_nacimiento=datetime.date):
         self.__nombre = nombre
         self.__apellido = apellido
         self.__fecha_nacimiento = fecha_nacimiento

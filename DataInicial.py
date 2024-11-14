@@ -43,6 +43,13 @@ ORIGEN_LIBRO = [
 ]
 
 ESTADO_LIBRO = [
-    "Prestado"
+    "Prestado",
     "Disponible"
+]
+
+ESTADO_PRESTAMO = [
+    "Vigente",
+    "Atrasado",
+    "Terminado",
+    "Renovado",
 ]

@@ -6,15 +6,15 @@ from Autor import Autor
 
 class Biblioteca:
     
-    def __init__(self, nombre, ubicacion, horario_atencion):
+    def __init__(self, nombre, ubicacion):
         self.__nombre = nombre
         self.__ubicacion = ubicacion
-        self.__horario_atencion = horario_atencion
         self.__estantes = np.full((5), fill_value=None, dtype=object)
         self.__nro_estantes = 0
         self.__bibliotecarios = []
         self.__lectores = []
         self.__autores = []
+        self.__multas = []
         self.__recibos = []
 
     # Metodos Accesores
@@ -42,6 +42,9 @@ class Biblioteca:
     
     def get_autores(self):
         return self.__autores
+    
+    def get_multas(self):
+        return self.__multas
     
     def get_recibos(self):
         return self.__recibos
@@ -82,6 +85,13 @@ class Biblioteca:
             if autor.get_nombre() == nombre and autor.get_apellido() == apellido:
                 return autor # retorna un objeto
         return None
+    
+    def buscar_multa(self, codigo_multa):
+        for multa in self.__multas:
+            if multa.get_codigo() == codigo_multa:
+                return multa
+            else:
+                return None
             
     # Metodos de agregacion
 
@@ -95,18 +105,20 @@ class Biblioteca:
     
     def agregar_bibliotecario(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         if self.buscar_bibliotecario(identificacion) == None:
-            bibliotecario = Bibliotecario(self, nombre, apellido, fecha_nacimiento, identificacion, email)
+            bibliotecario = Bibliotecario(nombre, apellido, fecha_nacimiento, identificacion, email)
             self.__bibliotecarios.append(bibliotecario)
+            print(f"Bibliotecario {nombre} agregado con exito")
 
-    def agregar_autor(self, nombre, apellido, fecha_nacimiento, pais_origen, fecha_fallecimiento=None):
+    def agregar_autor(self, nombre, apellido, fecha_nacimiento, fecha_fallecimiento, pais_origen):
         if self.buscar_autor(nombre, apellido) == None : 
-            autor = Autor(self, nombre, apellido, fecha_nacimiento, pais_origen, fecha_fallecimiento)
+            autor = Autor(nombre, apellido, fecha_nacimiento, fecha_fallecimiento, pais_origen)
             self.__autores.append(autor)
 
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
-        if self.buscar_lector() == None :
-            lector = Lector(self, nombre, apellido, fecha_nacimiento, identificacion, email)
+        if self.buscar_lector(identificacion) == None :
+            lector = Lector(nombre, apellido, fecha_nacimiento, identificacion, email)
             self.__lectores.append(lector)
+            print(f"Lector {nombre} agregado.")
 
     # Metodos de eliminacion
 

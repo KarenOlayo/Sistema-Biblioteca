@@ -1,12 +1,15 @@
-from Lector import Lector
 class Multa:
     
-    def __init__(self, fecha_inicio, fecha_fin):
+    def __init__(self, codigo, fecha_inicio, fecha_fin, estado):
+        self.__codigo = codigo
         self.__fecha_inicio = fecha_inicio
         self.__fecha_fin = fecha_fin
         self.__lector = [] #se almacena en una lista?
 
 # Metodos Accesores y Modificadores
+
+def get_codigo(self):
+    return self.__codigo
 
 def get_fecha_inicio(self):
     return self.__fecha_inicio

@@ -11,9 +11,6 @@ class Estante:
         
         self.__libros_estante = np.full((100), fill_value=None, dtype=object)
         self.__nro_libros_estante = 0
-        
-        #Pregunta: Como maximo, un estante tendra 100 libros ¿Se debera poner una variable con este valor,
-        #para hacer la validacion a la hora de agregar un libro o hacerla con el numero directamente?
 
     # Metodos accesores
 
@@ -31,11 +28,18 @@ class Estante:
     def set_area_del_conocimiento(self, nueva_area_del_conocimiento):
         self.area_del_conocimiento = nueva_area_del_conocimiento
     
-    def set_nro_libros_estante(self):
+    def incrementar_nro_libros_estante(self):
         self.__nro_libros_estante += 1
         
+    # Metodo str
+    
+    def __repr__(self):
+        return f"Estante de '{self.__area_del_conocimiento}'"
+    
+    # Metodos funcionales
+        
     def buscar_libro_estante(self, titulo, codigo_isbn):
-        for indice, libro in enumerate(self.__nro_libros_estante):
+        for indice, libro in enumerate(self.__libros_estante):
             if indice >= self.__nro_libros_estante:
                 break
             if libro is not None:
@@ -46,7 +50,8 @@ class Estante:
     def eliminar_libro_estante(self, titulo, codigo_isbn):
         indice, libro = self.buscar_libro_estante(titulo, codigo_isbn)
         if indice != -1:
-            for libro in range(indice, self.__nro_libros_estante, 1):
-                self.__libros_estante[libro] = self.__libros_estante[libro+1]
-            self.__libros_estante[libro+1] = None
+            for i in range(indice, self.__nro_libros_estante-1):
+                self.__libros_estante[i] = self.__libros_estante[i+1]
+            self.__libros_estante[self.__nro_libros_estante-1] = None
             self.__nro_libros_estante -= 1
+            print("Libro eliminado del estante.")
