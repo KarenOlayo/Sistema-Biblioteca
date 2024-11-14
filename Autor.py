@@ -1,11 +1,12 @@
 from Persona import Persona
 from country_list import countries_for_language
+import datetime
 
 class Autor(Persona):
     
     PAISES = dict(countries_for_language('es')).values()
     
-    def __init__(self, nombre, apellido, fecha_nacimiento, fecha_fallecimiento, pais_origen):
+    def __init__(self, nombre=str, apellido=str, fecha_nacimiento=datetime.date, fecha_fallecimiento=datetime.date, pais_origen:str=None):
         
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__fecha_fallecimiento = fecha_fallecimiento
@@ -34,3 +35,8 @@ class Autor(Persona):
         
     def set_pais_origen(self, nuevo_pais_origen):
         self.__pais_origen = nuevo_pais_origen
+        
+    # metodo de representacion
+    
+    def __repr__(self):
+        return f"{self.get_nombre()} {self.get_apellido()}'"

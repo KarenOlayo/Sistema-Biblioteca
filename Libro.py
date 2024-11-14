@@ -5,13 +5,13 @@ from DataInicial import ORIGEN_LIBRO
 from DataInicial import ESTADO_LIBRO
 
 class Libro:
-    
+         
     def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado):
-        
+          
         self.__titulo = titulo
         self.__codigo_isbn = codigo_isbn
         self.__estado = estado
-        self.__autor = [] 
+        self.__autor = autor
         
         if area_del_conocimiento in AREAS_DEL_CONOCIMIENTO:
             self.__area_del_conocimiento = area_del_conocimiento
@@ -86,3 +86,8 @@ class Libro:
 
     def set_estado(self, nuevo_estado):
         self.__estado = nuevo_estado
+    
+    # Metodo representacion
+    
+    def __repr__(self):
+        return f"'{self.__titulo}', '{self.__codigo_isbn}', '{self.__autor}'"

@@ -1,4 +1,6 @@
 from Persona import Persona
+import datetime
+from email_validator import validate_email, EmailNotValidError
 
 class Bibliotecario(Persona):
     
@@ -6,6 +8,13 @@ class Bibliotecario(Persona):
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__identificacion = identificacion
         self.__email = email
+        
+        # validacion del correo
+        try:
+            validacion = validate_email(email)
+            self.__email = validacion.email  # se guarda el correo validado y normalizado
+        except EmailNotValidError as e:
+            raise ValueError(f"Correo no válido: {e}")
 
     # Metodos Accesores
 
