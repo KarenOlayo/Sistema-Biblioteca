@@ -53,3 +53,8 @@ ESTADO_PRESTAMO = [
     "Terminado",
     "Renovado",
 ]
+
+ESTADO_MULTA=[
+    "Vigente",
+    "Terminado"
+]

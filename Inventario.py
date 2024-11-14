@@ -119,7 +119,7 @@ class Inventario:
                 
     # Metodos funcionales
     
-    def prestar_libro(self,titulo,codigo_isbn, identificacion_lector, fecha_prestamo, codigo_prestamo):
+    def prestar_libro(self,titulo,codigo_isbn, identificacion_lector, fecha_prestamo, codigo_prestamo, biblioteca=Biblioteca):
         lector = self.__biblioteca.buscar_lector(identificacion_lector) #retorna un objeto
         if lector is not None:
             if lector.verificar_requisitos_prestamo() == True:
@@ -127,7 +127,7 @@ class Inventario:
                 if indice != -1:
                     if libro.get_estado() == "Disponible":
                     
-                        prestamo = Prestamo(codigo_prestamo, lector, libro, fecha_prestamo)
+                        prestamo = Prestamo(codigo_prestamo, lector, libro, fecha_prestamo, biblioteca)
                         lector.get_prestamos().append(prestamo) 
                         lector.agregar_libro_a_prestamos_vigentes(libro)
                         
@@ -177,7 +177,8 @@ class Inventario:
                     self.agregar_libro_disponible(libro)
                 
                 lector.eliminar_libro_de_prestamos_vigentes()
-                    
+                prestamo.calcular_multa()
+                
             prestamo.set_estado("Terminado")
             
     # Metodos para listar

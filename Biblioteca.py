@@ -9,13 +9,14 @@ class Biblioteca:
     def __init__(self, nombre, ubicacion):
         self.__nombre = nombre
         self.__ubicacion = ubicacion
-        self.__estantes = np.full((5), fill_value=None, dtype=object)
+        self.__estantes = np.full((5), fill_value=None, dtype=Estante)
         self.__nro_estantes = 0
         self.__bibliotecarios = []
         self.__lectores = []
         self.__autores = []
         self.__multas = []
         self.__recibos = []
+        self.__nro_multas_biblioteca = 0
 
     # Metodos Accesores
 
@@ -48,6 +49,9 @@ class Biblioteca:
     
     def get_recibos(self):
         return self.__recibos
+    
+    def get_nro_multas_bibliotecas(self):
+        return self.__nro_multas_biblioteca
 
     # Metodos  Modificadores
 
@@ -57,8 +61,12 @@ class Biblioteca:
     def set_ubicacion(self, nueva_ubicacion):
         self.__ubicacion = nueva_ubicacion
 
-    def  set_horario_atencion(self, nuevo_horario):
+    def set_horario_atencion(self, nuevo_horario):
         self.__horario_atencion = nuevo_horario
+    
+    def agregar_multa(self, multa):
+        self.__multas.append(multa)
+        self.__nro_multas_biblioteca += 1
 
     # Metodos de busqueda
 
