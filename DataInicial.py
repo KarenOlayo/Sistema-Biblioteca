@@ -29,12 +29,8 @@ GENEROS_NO_LITERATURA = [
 ]
 
 TIPOS_DE_RECIBOS = [
-    "Adicion de Libros",
-    "Retiro de Libros",
-    "Prestamo de Libros",
-    "Renovacion de Prestamo",
-    "Reserva de Libros",
-    "Devolucion de Libros"
+    "Prestamo de Libro",
+    "Multa"
 ]
 
 ORIGEN_LIBRO = [

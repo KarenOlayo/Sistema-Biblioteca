@@ -1,22 +1,34 @@
 import numpy as np
+from datetime import timedelta
 from Estante import Estante
 from Bibliotecario import Bibliotecario
 from Lector import Lector
 from Autor import Autor
+from Prestamo import Prestamo
+from Multa import Multa
+from Recibo import Recibo
 
 class Biblioteca:
     
     def __init__(self, nombre, ubicacion):
         self.__nombre = nombre
         self.__ubicacion = ubicacion
+        
         self.__estantes = np.full((5), fill_value=None, dtype=Estante)
         self.__nro_estantes = 0
+        
         self.__bibliotecarios = []
         self.__lectores = []
         self.__autores = []
-        self.__multas = []
+        
         self.__recibos = []
-        self.__nro_multas_biblioteca = 0
+        self.__nro_recibos = 0
+        
+        self.__multas = []
+        self.__nro_multas_biblioteca = 1
+        
+        self.__prestamos = []
+        self.__nro_prestamos_biblioteca = 1
 
     # Metodos Accesores
 
@@ -52,6 +64,9 @@ class Biblioteca:
     
     def get_nro_multas_bibliotecas(self):
         return self.__nro_multas_biblioteca
+    
+    def get_nro_prestamos_biblioteca(self):
+        return self.__nro_prestamos_biblioteca
 
     # Metodos  Modificadores
 
@@ -100,6 +115,11 @@ class Biblioteca:
                 return multa
             else:
                 return None
+    def buscar_prestamo(self, codigo_prestamo):
+        for prestamo in self.__prestamos:
+            if prestamo.get_codigo() == codigo_prestamo:
+                return prestamo
+        return None
             
     # Metodos de agregacion
 
@@ -127,7 +147,65 @@ class Biblioteca:
             lector = Lector(nombre, apellido, fecha_nacimiento, identificacion, email)
             self.__lectores.append(lector)
             print(f"Lector {nombre} agregado.")
-
+    
+    def agregar_prestamo(self, prestamo=Prestamo):
+        self.__prestamos.append(prestamo)
+    
+    def agregar_multa(self, multa=Multa):
+        self.__multas.append(multa)
+    
+    # Sobre las multas
+    
+    def calcular_dias_retraso(self, prestamo=Prestamo):
+        fecha_devolucion = prestamo.get_fecha_devolucion()
+        fecha_entrega_libro = prestamo.get_fecha_entrega()
+        dias_retraso = (fecha_entrega_libro - fecha_devolucion)/timedelta(days=1)
+        return dias_retraso
+    
+    def calcular_multa(self, prestamo=Prestamo):
+        dias_retraso = self.calcular_dias_retraso(prestamo)
+        if dias_retraso > 0:
+            dias_penalizacion = dias_retraso*2        
+            codigo_multa = f"M{self.__nro_multas_bibliotecas()}"
+            fecha_inicio = self.__fecha_entrega
+            fecha_fin = self.__fecha_entrega + timedelta(days=dias_penalizacion)
+            
+            multa = Multa(codigo_multa,fecha_inicio, fecha_fin)
+            self.agregar_multa(multa) # se agrega la multa a la lista de la biblioteca
+            self.__nro_multas_biblioteca += 1
+            
+            lector = prestamo.get_lector()
+            lector.agregar_multa(multa) # agrega la multa a las multas del letor
+            
+            return multa
+    
+    # sobre los recibos
+    
+    def generar_recibo(self, objeto=object, identificacion_lector=str):
+        nombre_biblioteca = self.__nombre
+        codigo_recibo = f"R{self.__nro_recibos+1}"
+        
+        if isinstance(objeto, Prestamo):
+            fecha = objeto.get_fecha_prestamo()
+    
+            informacion = f"""Identificacion Lector = {objeto.get_lector().get_identificacion()}
+            Titulo Libro: '{objeto.get_libro().get_titulo()}'\n
+            Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}\n
+            Fecha Préstamo: {objeto.get_fecha_prestamo()}
+            Fecha Devolución: {objeto.get_fecha_devolucion()}
+            Codigo Préstamo: {objeto.get_codigo()}\n
+            """
+            recibo = Recibo(nombre_biblioteca, codigo_recibo, fecha,"Prestamo de Libro", informacion)
+            
+        elif isinstance(objeto, Multa):
+            fecha = objeto.get_fecha_inicio()
+            informacion = f"""Identificación Lector: {identificacion_lector}
+            Codigo Multa: {objeto.get_codigo()}
+            Fecha Inicio: {objeto.get_fecha_inicio()}
+            Fecha Fin: {objeto.get_fecha_fin()}
+            """
+            recibo = Recibo(nombre_biblioteca,codigo_recibo, fecha,"Multa", informacion)
+            
     # Metodos de eliminacion
 
     def eliminar_estante(self, area_del_conocimiento):
@@ -149,4 +227,4 @@ class Biblioteca:
     def eliminar_autor(self, nombre, apellido):
         autor = self.buscar_autor(nombre, apellido)
         if autor is not None:
-            self.__autores.remove(autor)       
+            self.__autores.remove(autor)

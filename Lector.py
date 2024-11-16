@@ -1,8 +1,5 @@
 import numpy as np
 from Persona import Persona
-from Libro import Libro
-from Multa import Multa
-from Prestamo import Prestamo
 import datetime
 from email_validator import validate_email, EmailNotValidError
 
@@ -15,11 +12,12 @@ class Lector(Persona):
         self.__email = email
         
         self.__prestamos = [] #objetos de la clase Prestamo , funciona como un historial
+        self.__recibos = []
         
-        self.__prestamos_vigentes = np.full((3),fill_value=None, dtype=Libro)
+        self.__prestamos_vigentes = np.full((3),fill_value=None, dtype=object)
         self.__nro_prestamos_vigentes = 0
         
-        self.__multas = np.full((3),fill_value=None, dtype=Multa)
+        self.__multas = np.full((3),fill_value=None, dtype=object)
         self.__nro_multas = 0
                 
         # validacion del correo
@@ -51,6 +49,9 @@ class Lector(Persona):
     
     def get_nro_multas(self):
         return self.__nro_multas
+    
+    def get_recibos_lector(self):
+        return self.__recibos
 
     # Metodos  Modificadores
 
@@ -64,6 +65,11 @@ class Lector(Persona):
         self.__nro_multas += 1
     
     # Metodos funcionales
+    
+    def agregar_multa(self, multa=object):
+        if self.__nro_multas < 3:
+            self.__multas[self.__nro_multas] = multa
+            self.__nro_multas += 1
     
     def buscar_prestamo(self, codigo_prestamo):
         for prestamo in self.__prestamos :
@@ -97,12 +103,12 @@ class Lector(Persona):
                 else:
                     return False
     
-    def agregar_libro_a_prestamos_vigentes(self,libro:Libro):
+    def agregar_libro_a_prestamos_vigentes(self,libro:object):
         if self.__nro_prestamos_vigentes < 3:
             self.__prestamos_vigentes[self.__nro_prestamos_vigentes] = libro
             self.__nro_prestamos_vigentes += 1
 
-    def eliminar_libro_de_prestamos_vigentes(self, libro:Libro):
+    def eliminar_libro_de_prestamos_vigentes(self, libro:object):
         titulo = libro.get_titulo()
         codigo_isbn = libro.get_codigo_isbn()
         
@@ -114,5 +120,6 @@ class Lector(Persona):
                 self.__prestamos_vigentes[self.__nro_prestamos_vigentes-1] = None
                 self.__nro_prestamos_vigentes -= 1
 
-        
+    def guardar_recibo(self, recibo:object):
+        self.__recibos.append(recibo)
         
