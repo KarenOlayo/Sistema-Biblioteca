@@ -112,28 +112,31 @@ class Inventario:
             if libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
                 self.__libros_disponibles.remove(libro)
     
-    def eliminar_libro_prestado(self, titulo, codigo_isbn):
-        for libro in self.__libros_prestados:
-            if libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
-                self.__libros_prestados.remove(libro)
+    def eliminar_libro_prestado(self, libro:object):
+        self.__libros_prestados.remove(libro)
                 
     # Metodos funcionales
     
-    def prestar_libro(self,titulo,codigo_isbn, identificacion_lector, fecha_prestamo, codigo_prestamo, biblioteca=Biblioteca):
+    def prestar_libro(self,titulo,codigo_isbn, identificacion_lector, fecha_prestamo):
         lector = self.__biblioteca.buscar_lector(identificacion_lector) #retorna un objeto
         if lector is not None:
             if lector.verificar_requisitos_prestamo() == True:
                 indice, libro = self.buscar_libro_biblioteca(titulo, codigo_isbn)
                 if indice != -1:
                     if libro.get_estado() == "Disponible":
-                    
-                        prestamo = Prestamo(codigo_prestamo, lector, libro, fecha_prestamo, biblioteca)
-                        lector.get_prestamos().append(prestamo) 
+                        
+                        codigo_prestamo = f"P{self.__biblioteca.get_nro_prestamos_biblioteca()}"
+                        prestamo = Prestamo(codigo_prestamo, lector, libro, fecha_prestamo)
+                        self.__biblioteca.agregar_prestamo(prestamo)
+                        lector.get_prestamos().append(prestamo)
                         lector.agregar_libro_a_prestamos_vigentes(libro)
                         
                         libro.set_estado("Prestado")
                         self.eliminar_libro_disponible(titulo, codigo_isbn)
                         self.agregar_libro_prestado(libro)
+                        
+                        recibo =self.__biblioteca.generar_recibo(prestamo,identificacion_lector)
+                        lector.guardar_recibo(recibo)
                         
                         print("Préstamo realizado con éxito.")
                         print(f"Fecha prestamo: {prestamo.get_fecha_prestamo()}")
@@ -162,24 +165,33 @@ class Inventario:
                     prestamo.set_fecha_devolucion(nueva_fecha_devolucion)
                     prestamo.incrementar_nro_renovaciones()
     
-    def recibir_libro_devuelto(self, codigo_prestamo, identificacion_lector):
+    def recibir_libro_devuelto(self, codigo_prestamo, identificacion_lector, fecha_entrega):
         lector = self.__biblioteca.buscar_lector(identificacion_lector)
         prestamo = self.__biblioteca.buscar_prestamo(codigo_prestamo)
-        if lector is not None and prestamo is not None:
-            if prestamo.get_lector().get_identificacion() == identificacion_lector:
-                libro = prestamo.get_libro()
-                if libro is not None:
-                    libro.set_estado("Disponible")
+        if lector is not None:
+            if prestamo is not None:
+                if prestamo.get_lector().get_identificacion() == identificacion_lector:
+                    libro = prestamo.get_libro()
+                    if libro is not None:
+                        libro.set_estado("Disponible")
+                        
+                        for libro in self.__libros_prestados:
+                            if libro.get_codigo_isbn() == prestamo.get_libro().get_codigo_isbn():
+                                self.eliminar_libro_prestado(libro)
+                        self.agregar_libro_disponible(libro)
                     
-                    for libro in self.__libros_prestados:
-                        if libro.get_codigo_isbn() == prestamo.get_libro().get_codigo_isbn():
-                            self.eliminar_libro_prestado(libro)
-                    self.agregar_libro_disponible(libro)
-                
-                lector.eliminar_libro_de_prestamos_vigentes()
-                prestamo.calcular_multa()
-                
-            prestamo.set_estado("Terminado")
+                    lector.eliminar_libro_de_prestamos_vigentes(libro)
+                    self.__biblioteca.calcular_multa(prestamo)
+                    
+                    prestamo.set_fecha_entrega(fecha_entrega)
+                    prestamo.set_estado("Terminado")
+                    
+                else:
+                    print(f"El prestamo {codigo_prestamo} no corresponde al lector {identificacion_lector}")
+            else:
+                print(f"El prestamo {codigo_prestamo} no existe.")
+        else:
+            print(f"El lector {identificacion_lector} no existe.")
             
     # Metodos para listar
     
