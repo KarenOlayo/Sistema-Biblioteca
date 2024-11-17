@@ -1,5 +1,5 @@
 import numpy as np
-from datetime import timedelta
+from datetime import datetime , timedelta
 from Estante import Estante
 from Bibliotecario import Bibliotecario
 from Lector import Lector
@@ -141,6 +141,7 @@ class Biblioteca:
         if self.buscar_autor(nombre, apellido) == None : 
             autor = Autor(nombre, apellido, fecha_nacimiento, fecha_fallecimiento, pais_origen)
             self.__autores.append(autor)
+            print(f"Autor {nombre} {apellido} agregado con exito")
 
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         if self.buscar_lector(identificacion) == None :
@@ -150,25 +151,33 @@ class Biblioteca:
     
     def agregar_prestamo(self, prestamo=Prestamo):
         self.__prestamos.append(prestamo)
+        self.__nro_prestamos_biblioteca += 1
     
     def agregar_multa(self, multa=Multa):
         self.__multas.append(multa)
+        self.__nro_multas_biblioteca += 1
     
     # Sobre las multas
     
+    """
     def calcular_dias_retraso(self, prestamo=Prestamo):
         fecha_devolucion = prestamo.get_fecha_devolucion()
         fecha_entrega_libro = prestamo.get_fecha_entrega()
         dias_retraso = (fecha_entrega_libro - fecha_devolucion)/timedelta(days=1)
         return dias_retraso
+    """
     
     def calcular_multa(self, prestamo=Prestamo):
-        dias_retraso = self.calcular_dias_retraso(prestamo)
+        
+        fecha_devolucion = prestamo.get_fecha_devolucion()
+        fecha_entrega_libro = prestamo.get_fecha_entrega()
+        dias_retraso = (fecha_entrega_libro - fecha_devolucion)/timedelta(days=1)
+        
         if dias_retraso > 0:
             dias_penalizacion = dias_retraso*2        
-            codigo_multa = f"M{self.__nro_multas_bibliotecas()}"
-            fecha_inicio = self.__fecha_entrega
-            fecha_fin = self.__fecha_entrega + timedelta(days=dias_penalizacion)
+            codigo_multa = f"M{self.__nro_multas_biblioteca+1}"
+            fecha_inicio = fecha_entrega_libro
+            fecha_fin = fecha_entrega_libro + timedelta(days=dias_penalizacion)
             
             multa = Multa(codigo_multa,fecha_inicio, fecha_fin)
             self.agregar_multa(multa) # se agrega la multa a la lista de la biblioteca
@@ -184,27 +193,30 @@ class Biblioteca:
     def generar_recibo(self, objeto=object, identificacion_lector=str):
         nombre_biblioteca = self.__nombre
         codigo_recibo = f"R{self.__nro_recibos+1}"
+        recibo = None
         
         if isinstance(objeto, Prestamo):
             fecha = objeto.get_fecha_prestamo()
     
-            informacion = f"""Identificacion Lector = {objeto.get_lector().get_identificacion()}
-            Titulo Libro: '{objeto.get_libro().get_titulo()}'\n
-            Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}\n
-            Fecha Préstamo: {objeto.get_fecha_prestamo()}
-            Fecha Devolución: {objeto.get_fecha_devolucion()}
-            Codigo Préstamo: {objeto.get_codigo()}\n
-            """
-            recibo = Recibo(nombre_biblioteca, codigo_recibo, fecha,"Prestamo de Libro", informacion)
+            informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
+Titulo Libro: '{objeto.get_libro().get_titulo()}'
+Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
+Fecha Préstamo: {objeto.get_fecha_prestamo()}
+Fecha Devolución: {objeto.get_fecha_devolucion()}"""
+
+            recibo = Recibo(nombre_biblioteca, codigo_recibo, fecha, identificacion_lector,"Prestamo de Libro", informacion)
+            self.__nro_recibos += 1
             
         elif isinstance(objeto, Multa):
-            fecha = objeto.get_fecha_inicio()
-            informacion = f"""Identificación Lector: {identificacion_lector}
-            Codigo Multa: {objeto.get_codigo()}
-            Fecha Inicio: {objeto.get_fecha_inicio()}
-            Fecha Fin: {objeto.get_fecha_fin()}
-            """
-            recibo = Recibo(nombre_biblioteca,codigo_recibo, fecha,"Multa", informacion)
+            fecha_recibo = datetime.today().date()
+            informacion = f"""Codigo Multa: {objeto.get_codigo()}
+Fecha Inicio: {objeto.get_fecha_inicio()}
+Fecha Fin: {objeto.get_fecha_fin()}"""
+
+            recibo = Recibo(nombre_biblioteca,codigo_recibo, fecha_recibo, identificacion_lector, "Multa", informacion)
+            self.__nro_recibos += 1
+        
+        return recibo
             
     # Metodos de eliminacion
 
