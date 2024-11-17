@@ -139,8 +139,7 @@ class Inventario:
                         lector.guardar_recibo(recibo)
                         
                         print("Préstamo realizado con éxito.")
-                        print(f"Fecha prestamo: {prestamo.get_fecha_prestamo()}")
-                        print(f"Fecha devolución: {prestamo.get_fecha_devolucion()}")
+                        print(recibo)
                     
                     else:
                         print("El libro no está disponible.")
@@ -180,11 +179,17 @@ class Inventario:
                                 self.eliminar_libro_prestado(libro)
                         self.agregar_libro_disponible(libro)
                     
-                    lector.eliminar_libro_de_prestamos_vigentes(libro)
-                    self.__biblioteca.calcular_multa(prestamo)
+                    lector.eliminar_libro_de_prestamos_vigentes(libro)                    
                     
                     prestamo.set_fecha_entrega(fecha_entrega)
                     prestamo.set_estado("Terminado")
+                    
+                    multa = self.__biblioteca.calcular_multa(prestamo)
+                    
+                    recibo = self.__biblioteca.generar_recibo(multa, identificacion_lector)
+                    print(recibo)
+                    
+                    print("Libro devuelto exitosamente.")
                     
                 else:
                     print(f"El prestamo {codigo_prestamo} no corresponde al lector {identificacion_lector}")

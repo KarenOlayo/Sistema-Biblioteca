@@ -2,11 +2,12 @@ from DataInicial import TIPOS_DE_RECIBOS
 
 class Recibo:
     
-    def __init__(self, nombre_biblioteca, codigo_recibo, fecha, tipo, informacion):
+    def __init__(self, nombre_biblioteca, codigo_recibo, fecha, identificacion_lector,tipo, informacion):
         
         self.__nombre_biblioteca = nombre_biblioteca
         self.__codigo_recibo = codigo_recibo
         self.__fecha = fecha
+        self.__identificacion_lector = identificacion_lector
         self.__informacion = informacion
         
         if tipo in TIPOS_DE_RECIBOS:
@@ -23,10 +24,13 @@ class Recibo:
         self.__tipo = nuevo_tipo
 
     def __repr__(self):
-        return f""" Biblioteca: {self.__nombre_biblioteca}\n
-              Recibo N° {self.__codigo_recibo}\n
-              Fecha: {self.__fecha}\n
-              Identificación del lector: {self.__identificacion_lector}\n
-              Proceso: {self.__tipo}\n
-              Resumen:\n
-              {self.__informacion}"""
+        return f"""---
+Biblioteca: {self.__nombre_biblioteca}
+Recibo N° {self.__codigo_recibo}
+Fecha: {self.__fecha}
+Identificación del lector: {self.__identificacion_lector}
+Proceso: {self.__tipo}
+Resumen:
+{self.__informacion}
+---
+"""

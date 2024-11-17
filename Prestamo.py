@@ -1,17 +1,18 @@
 from DataInicial import ESTADO_PRESTAMO
 from Libro import Libro
+from Lector import Lector
 from datetime import datetime , timedelta
 
 class Prestamo:
-    from Lector import Lector
-    def __init__(self, codigo, lector:Lector, libro:Libro, fecha_prestamo:datetime, fecha_devolucion:datetime=None, fecha_entrega:str='',estado:str='Vigente'):
+    def __init__(self, codigo, lector:Lector, libro:Libro, fecha_prestamo:datetime, fecha_devolucion:datetime=None, fecha_entrega:datetime=None,estado:str='Vigente'):
         self.__codigo = codigo
         self.__lector = lector
         self.__libro = libro
         self.__fecha_prestamo = datetime.strptime(fecha_prestamo, '%d/%m/%Y').date()
         self.__fecha_devolucion = datetime.strptime(fecha_prestamo, '%d/%m/%Y').date() + timedelta(days=30)
+        self.__fecha_entrega = datetime.strptime(fecha_prestamo, '%d/%m/%Y').date() + timedelta(days=30)
         
-        if fecha_entrega is not '':
+        if fecha_entrega is not None:
             self.__fecha_entrega = datetime.strptime(fecha_entrega, '%d/%m/%Y').date()
             
         self.__nro_renovaciones = 0
@@ -67,6 +68,9 @@ class Prestamo:
     
     def set_fecha_entrega(self, fecha_entrega):
         self.__fecha_entrega = datetime.strptime(fecha_entrega, '%d/%m/%Y').date() 
+    
+    def set_estado(self, nuevo_estado):
+        self.__estado = nuevo_estado
            
     def incrementar_nro_renovaciones(self):
         self.__nro_renovaciones += 1
