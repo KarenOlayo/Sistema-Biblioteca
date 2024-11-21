@@ -48,7 +48,8 @@ class Biblioteca:
                        "codigo_isbn",
                        "autor",
                        "area_del_conocimiento",
-                       "genero", "nro_paginas",
+                       "genero",
+                       "nro_paginas",
                        "fecha_publicacion",
                        "origen",
                        "estado"],
@@ -82,25 +83,29 @@ class Biblioteca:
     }
         
         for archivo, encabezados in archivos.items():
-            if not os.path.exists(archivo):
-                #crear el archivo dependiendo de su tipo
-                
-                if archivo.endswith(".csv") and encabezados:
+            try:
+                if not os.path.exists(archivo):
                     
-                    # Inicializar un archivo CSV con encabezados
-                    with open(archivo, "w", newline="", encoding='utf-8') as archivo_csv:
-                        writer = csv.writer(archivo_csv)
-                        writer.writerow(encabezados)
+                    #crear el archivo dependiendo de su tipo
                     
-                elif archivo.endswith(".yaml"):
-                    
-                    # Inicializar un archivo YAML con un objeto vacío
-                    with open(archivo, "w", encoding='utf-8') as archivo_yaml:
-                        yaml.dump({}, archivo_yaml)
-                else:
-                    # Crear archivos de texto plano vacíos
-                    with open(archivo, "w", encoding='utf-8') as archivo_txt:
-                        pass
+                    if archivo.endswith(".csv") and encabezados is not None:
+                        
+                        # Inicializar un archivo csv con los encabezados
+                        with open(archivo, "w", newline="", encoding='utf-8') as archivo_csv:
+                            writer = csv.writer(archivo_csv)
+                            writer.writerow(encabezados)
+                        
+                    elif archivo.endswith(".yaml"):
+                        
+                        # Inicializar un archivo yaml con un objeto vacío
+                        with open(archivo, "w", encoding='utf-8') as archivo_yaml:
+                            yaml.dump([],archivo_yaml)
+                    else:
+                        # Crear archivos de texto plano vacio
+                        with open(archivo, "w", encoding='utf-8') as archivo_txt:
+                            pass
+            except Exception as e:
+                print(f"Error al crear el archivo {archivo}: {str(e)}")
                 
     # Metodos Accesores
 
@@ -396,14 +401,23 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
     
     def guardar_lector_en_archivo(self, lector=Lector):
         
-        """Guarda la informacion de un lector en el archivo 'lectores.yaml'"""
+        datos_lector = lector.to_dict()
+        file_path = 'lectores.yaml'
         
-        datos_lector = lector.to_dict() 
-        datos = {'lector': datos_lector} 
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as archivo:
+                try:
+                    lectores = yaml.safe_load(archivo) or []
+                except yaml.YAMLError:
+                    lectores = []
+        else:
+            lectores = []
         
-        with open('lectores.yaml','a') as archivo:
-            yaml.dump(datos, archivo, default_flow_style=False, allow_unicode=True)
+        lectores.append(datos_lector)
         
+        with open(file_path, "a", encoding="utf-8") as archivo:
+            yaml.dump(lectores, archivo, default_flow_style=False, allow_unicode=True)
+                        
     def guardar_bibliotecario_en_archivo(self, bibliotecario=Bibliotecario):
         
         """Guarda la informacion de un bibliotecario en el archivo bibliotecarios.csv"""
@@ -466,11 +480,11 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
     
     # Cargar archivos
 
+    """
     def cargar_archivos(self):
         
-        """
-        Carga todos los datos desde los archivos especificados.
-        """
+        #Carga todos los datos desde los archivos especificados.
+        
         # Nombres de los archivos
         bibliotecarios_file = 'bibliotecarios.csv'
         autores_file = 'autores.csv'
@@ -496,6 +510,7 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
                 try:
                     autor = Autor.from_dict(fila)
                     self.__autores.append(autor)
+                    print(f"Se cargaron los autores desde {archivo}")
                 except ValueError as e:
                     print(f"Error al cargar autor: {e}")
 
@@ -531,6 +546,71 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
 
         # Cargar recibos desde YAML
         with open(recibos_file, mode='r', encoding='utf-8') as archivo:
+            recibos_data = yaml.safe_load(archivo)
+            for recibo_dict in recibos_data:
+                try:
+                    recibo = Recibo.from_dict(recibo_dict)
+                    self.__recibos.append(recibo)
+                except ValueError as e:
+                    print(f"Error al cargar recibo: {e}")
+    """
+    
+    def cargar_lectores_desde_archivo(self, archivo='lectores.yaml'):
+        with open(archivo, mode='r', encoding='utf-8') as archivo:
+            lectores = yaml.safe_load(archivo)
+            
+            if lectores and lectores[0] == []:
+                lectores.pop(0)
+                
+            for lector in lectores:
+                try:
+                    lector = Lector.from_dict(lector, self.__prestamos, self.__multas, self.__recibos)
+                    self.__lectores.append(lector)
+                except ValueError as e:
+                    print(f"Error al cargar lector: {e}")
+    
+    def cargar_bibliotecarios_desde_archivo(self, archivo='bibliotecarios.csv'):
+        with open(archivo, mode='r', encoding='utf-8') as archivo:
+            reader = csv.DictReader(archivo)
+            for fila in reader:
+                try:
+                    bibliotecario = Bibliotecario.from_dict(fila)
+                    self.__bibliotecarios.append(bibliotecario)
+                except ValueError as e:
+                    print(f"Error al cargar bibliotecario: {e}")
+    
+    def cargar_autores_desde_archivo(self, archivo='autores.csv'):
+        with open(archivo, mode='r', encoding='utf-8') as archivo:
+            reader = csv.DictReader(archivo)
+            for fila in reader:
+                try:
+                    autor = Autor.from_dict(fila)
+                    self.__autores.append(autor)
+                except ValueError as e:
+                    print(f"Error al cargar autor: {e}")
+    
+    def cargar_prestamos_desde_archivo(self, archivo='prestamos.csv'):
+        with open(archivo, mode='r', encoding='utf-8') as archivo:
+                reader = csv.DictReader(archivo)
+                for fila in reader:
+                    try:
+                        prestamo = Prestamo.from_dict(fila)
+                        self.__prestamos.append(prestamo)
+                    except ValueError as e:
+                        print(f"Error al cargar préstamo: {e}")
+    
+    def cargar_multas_desde_archivo(self, archivo='multas.yaml'):
+        with open(archivo, mode='r', encoding='utf-8') as archivo:
+            multas_data = yaml.safe_load(archivo)
+            for multa_dict in multas_data:
+                try:
+                    multa = Multa.from_dict(multa_dict)
+                    self.__multas.append(multa)
+                except ValueError as e:
+                    print(f"Error al cargar multa: {e}")
+                    
+    def cargar_recibos_desde_archivo(self, archivo='recibos.yaml'):
+        with open(archivo, mode='r', encoding='utf-8') as archivo:
             recibos_data = yaml.safe_load(archivo)
             for recibo_dict in recibos_data:
                 try:

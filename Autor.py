@@ -1,6 +1,6 @@
 from Persona import Persona
 from country_list import countries_for_language
-import datetime
+from datetime import datetime
 
 class Autor(Persona):
     
@@ -56,10 +56,10 @@ class Autor(Persona):
     
     def to_dict(self):
         return {
-            'nombre': self.nombre,
-            'apellido': self.apellido,
-            'fecha_nacimiento': self.fecha_nacimiento,
-            'fecha_fallecimiento': self.fecha_fallecimiento if self.__fecha_fallecimiento is not None else None,
+            'nombre': self.get_nombre(),
+            'apellido': self.get_apellido(),
+            'fecha_nacimiento': self.get_fecha_nacimiento() if self.get_fecha_nacimiento is not None else None,
+            'fecha_fallecimiento': self.__fecha_fallecimiento if self.__fecha_fallecimiento is not None else None,
             'pais_origen': self.__pais_origen 
         }
 

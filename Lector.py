@@ -95,9 +95,9 @@ class Lector(Persona):
     def to_dict(self):
         return {
             'identificacion': self.__identificacion,
-            'nombre': self.__nombre,
-            'apellido': self.__apellido,
-            'fecha_nacimiento': self.__fecha_nacimiento.strftime('%d/%m/%Y'),
+            'nombre': self.get_nombre(),
+            'apellido': self.get_apellido(),
+            'fecha_nacimiento': self.get_fecha_nacimiento().strftime('%d/%m/%Y'),
             'email': self.__email,
             'prestamos': [
                 {
@@ -119,7 +119,7 @@ class Lector(Persona):
                     'fecha_inicion' : multa.get_fecha_inicio(),
                     'fecha_fin' : multa.get_fecha_fin(),
                     'estado' : multa.get_estado(),
-                } for multa in self.__multas
+                } for multa in self.__multas if multa is not None
             ] ,
             'recibos' : [
                 {
@@ -172,8 +172,9 @@ class Lector(Persona):
     
     def guardar_multa(self, multa=object):
         if self.__nro_multas < 3:
-            self.__multas[self.__nro_multas] = multa
-            self.__nro_multas += 1
+            if multa is not None:
+                self.__multas[self.__nro_multas] = multa
+                self.__nro_multas += 1
     
     def buscar_prestamo(self, codigo_prestamo):
         for prestamo in self.__prestamos :
