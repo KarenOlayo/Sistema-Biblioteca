@@ -13,9 +13,40 @@ class Inventario:
         self.__libros_prestados = []
         self.__libros_disponibles = []
     
-    @property
     def get_biblioteca(self):
         return self.__biblioteca
+    
+    # Cargar informacion
+    
+    def cargar_libros_desde_archivo(self, archivo='libros.csv'):
+        
+        """Carga la informacion de los libros desde un archivo csv y los agrega a la biblioteca"""
+        
+        with open('libros.csv', 'r', encoding='utf-8') as archivo:
+                reader = csv.DictReader(archivo)     
+                
+                for fila in reader:
+                    libro = Libro.from_dict(fila)
+                    self.agregar_libro_a_inventario(libro)
+                
+                print(f"Se cargaron los libros desde {archivo}.")  
+    
+    # Guardar informacion de libros en archivo csv
+                
+    def guardar_libro_en_archivo(self, libro=Libro):
+        
+        """Guarda la información de un libro en el archivo libros.csv"""
+        
+        datos_libro = libro.to_dict()
+        
+        with open('libros.csv','a',newline='',encoding='utf-8') as archivo:
+            
+            writer = csv.DictWriter(archivo, fieldnames=datos_libro.keys())
+            
+            if archivo.tell() == 0: 
+                writer.writeheader()
+                
+            writer.writerow(datos_libro)       
 
     # Metodos de busqueda y verificacion
     
@@ -60,6 +91,7 @@ class Inventario:
                     self.__libros[self.__nro_libros] = libro 
                     self.__nro_libros += 1 
                     self.agregar_libro_estante(area_del_conocimiento, libro)
+                    self.__biblioteca.guardar_libro_en_archivo(libro)
                     print("Libro agregado con éxito.")
             else:
                 print("El autor no está registrado.")
@@ -147,6 +179,8 @@ class Inventario:
             
             self.__biblioteca.guardar_prestamo(prestamo)
             self.__biblioteca.guardar_recibo(recibo)
+            self.__biblioteca.guardar_prestamo_en_archivo(prestamo)
+            self.__biblioteca.guardar_recibo_en_archivo(recibo)
                             
             lector.guardar_prestamo(prestamo)
             lector.guardar_recibo(recibo)
@@ -154,6 +188,8 @@ class Inventario:
             
             self.eliminar_libro_disponible(titulo, codigo_isbn)
             self.agregar_libro_prestado(libro)
+            
+            self.guardar_libro_en_archivo(libro)
                 
             print("Préstamo realizado con éxito.")
             #print(recibo)
@@ -180,6 +216,7 @@ class Inventario:
                     
                     recibo = self.__biblioteca.generar_recibo(prestamo, lector)
                     self.__biblioteca.guardar_recibo(recibo)
+                    self.__biblioteca.guardar_recibo_en_archivo(recibo)
                     lector.guardar_recibo(recibo)
                     
                     print("Prestamo renovado exitosamente.")
@@ -216,15 +253,18 @@ class Inventario:
                                 prestamo.set_multa(multa)
                                 lector.guardar_multa(multa)
                                 self.__biblioteca.guardar_multa(multa)
+                                self.__biblioteca.guardar_multa_en_archivo(multa)
                                 #print(multa)
                                 
                                 recibo_multa = self.__biblioteca.generar_recibo(multa, lector)
                                 self.__biblioteca.guardar_recibo(recibo_multa)
+                                self.__biblioteca.guardar_recibo_en_archivo(recibo_multa)
                                 lector.guardar_recibo(recibo_multa)
                                 #print(recibo_multa)
                             
                             recibo_devolucion = self.__biblioteca.generar_recibo(prestamo,lector)
                             self.__biblioteca.guardar_recibo(recibo_devolucion)
+                            self.__biblioteca.guardar_recibo_en_archivo(recibo_devolucion)
                             lector.guardar_recibo(recibo_devolucion)
                             print("Libro devuelto exitosamente.")
                             #print(recibo_devolucion)
@@ -280,6 +320,8 @@ class Inventario:
                 listado_libros.append(libro)
         return listado_libros
     
+           
+    """
     def crear_archivo_lectores(self):
         lectores_objeto = self.__biblioteca.get_lectores()
         datos_lectores = []
@@ -307,4 +349,4 @@ class Inventario:
             for item in filas_a_guardar:
                 escritor.writerow(item)
                 print(item)
-        
+    """

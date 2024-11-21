@@ -5,6 +5,69 @@ from email_validator import validate_email, EmailNotValidError
 
 class Lector(Persona):
     
+    @staticmethod
+    def from_dict(data, prestamos, multas, recibos):
+        """
+        Crea una instancia de Lector a partir de un diccionario.
+
+        Args:
+            data (dict): Diccionario con los datos del lector.
+            prestamos (list): Lista de objetos Prestamo ya cargados.
+            multas (list): Lista de objetos Multa ya cargados.
+            recibos (list): Lista de objetos Recibo ya cargados.
+
+        Returns:
+            Lector: Instancia de Lector creada.
+        """
+        # Reconstruir los atributos básicos
+        nombre = data['nombre']
+        apellido = data['apellido']
+        fecha_nacimiento = datetime.datetime.strptime(data['fecha_nacimiento'], '%d/%m/%Y').date()
+        identificacion = data['identificacion']
+        email = data['email']
+
+        # Crear la instancia del lector
+        lector = Lector(
+            nombre=nombre,
+            apellido=apellido,
+            fecha_nacimiento=fecha_nacimiento,
+            identificacion=identificacion,
+            email=email
+        )
+
+        # La lista de préstamos
+        lector.__prestamos = [
+            next((p for p in prestamos if p.get_codigo() == prestamo_data['codigo_prestamo']), None)
+            for prestamo_data in data['prestamos']
+        ]
+
+        # La lista de multas
+        lector.__multas = np.array([
+            next((m for m in multas if m.get_codigo() == multa_data['codigo_multa']), None)
+            for multa_data in data['multas']
+        ], dtype=object)
+
+        # La lista de recibos
+        lector.__recibos = [
+            next((r for r in recibos if r.get_codigo() == recibo_data['codigo_recibo']), None)
+            for recibo_data in data['recibos']
+        ]
+
+        # Validar los préstamos vigentes
+        lector.__prestamos_vigentes = np.array([
+            p.get_libro() if p.get_estado() == 'Vigente' else None
+            for p in lector.__prestamos
+        ], dtype=object)
+
+        # Contar el número de préstamos vigentes
+        lector.__nro_prestamos_vigentes = len([p for p in lector.__prestamos if p.get_estado() == 'Vigente'])
+
+        # Contar las multas activas
+        lector.__nro_multas = len([m for m in lector.__multas if m is not None and m.get_estado() == 'Vigente'])
+
+        return lector
+
+    
     def  __init__(self, nombre=str, apellido=str, fecha_nacimiento=datetime.date, identificacion=str, email=str):
         
         super().__init__(nombre, apellido, fecha_nacimiento)
@@ -26,6 +89,47 @@ class Lector(Persona):
             self.__email = validacion.email  # se guarda el correo validado y normalizado
         except EmailNotValidError as e:
             raise ValueError(f"Correo no válido: {e}")
+    
+    # Crear un diccionario con los atributos del lector
+    
+    def to_dict(self):
+        return {
+            'identificacion': self.__identificacion,
+            'nombre': self.__nombre,
+            'apellido': self.__apellido,
+            'fecha_nacimiento': self.__fecha_nacimiento.strftime('%d/%m/%Y'),
+            'email': self.__email,
+            'prestamos': [
+                {
+                    'codigo_prestamo': prestamo.get_codigo(),
+                    'codigo_isbn_libro': prestamo.get_libro().get_codigo_isbn(),
+                    'fecha_prestamo' : prestamo.get_fecha_prestamo().strftime('%d/%m/%Y'),
+                    'fecha_devolucion': prestamo.get_fecha_devolucion().strftime('%d/%m/%Y'),
+                    'fecha_entrega': prestamo.get_fecha_entrega().strftime('%d/%m/%Y') if prestamo.get_fecha_entrega() is not None else None,
+                    'duracion_prestamo' : prestamo.get_dias_duracion() if prestamo.get_dias_duracion() is not None else None,
+                    'estado' : prestamo.get_estado(),
+                    'multa' : prestamo.get_multa().get_codigo() if prestamo.get_multa() is not None else None
+                } for prestamo in self.__prestamos
+            ] ,
+            'multas' : [
+                {
+                    'codigo_multa': multa.get_codigo(),
+                    'codigo_prestamo': multa.get_prestamo().get_codigo(),
+                    'dias_penalizacion': multa.get_dias_penalizacion(),
+                    'fecha_inicion' : multa.get_fecha_inicio(),
+                    'fecha_fin' : multa.get_fecha_fin(),
+                    'estado' : multa.get_estado(),
+                } for multa in self.__multas
+            ] ,
+            'recibos' : [
+                {
+                    'nombre_biblioteca' : recibo.get_nombre_biblioteca(),
+                    'codigo_recibo': recibo.get_codigo(),
+                    'fecha' : recibo.get_fecha(),
+                    'informacion' : recibo.get_informacion()
+                } for recibo in self.__recibos
+            ] 
+        }
 
     # Metodos Accesores
 
