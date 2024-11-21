@@ -3,8 +3,6 @@ from Biblioteca import Biblioteca
 from Inventario import Inventario
 import datetime
 
-#datetime.date(año, mes, día)
-
 class Main:
     
     def run(self):
@@ -46,15 +44,30 @@ class Main:
         # prestar libros
         
         inventario.prestar_libro("Cien años","01","12324234","13/11/2024")
-        inventario.prestar_libro("Cien lagrimas","02","2345","12/12/2012")
-        inventario.prestar_libro("Chocolate con cafe","234","3453235","16/11/2024")
+        inventario.prestar_libro("Cien lagrimas","02","2345","14/11/2024")
+        inventario.prestar_libro("Chocolate con cafe","234","3453235","15/11/2024")
         
+        # renovar prestamo de libros
+        
+        inventario.renovar_prestamo("P1","12324234")
+        
+        # recibir libros devueltos
+        """
         inventario.recibir_libro_devuelto("P1","12324234","15/11/2024")
-        inventario.recibir_libro_devuelto("P2","2345","14/02/2013")
+        inventario.recibir_libro_devuelto("P2","2345","01/01/2025")
         inventario.recibir_libro_devuelto("P3","3453235","18/12/2024")
-                        
-    def cargar_informacion(self):
-        pass  
-    
+        
+        # listar 
+        
+        print(inventario.listar_por_estado("Disponible"))
+        print(inventario.listar_por_estado("Prestado"))
+        print(inventario.listar_por_autor("Lechuza","Perez"))
+        """
+        
+        inventario.crear_archivo_lectores()
+        inventario.crear_archivo_autores()
+        
+
+
 main = Main()
 main.run()
