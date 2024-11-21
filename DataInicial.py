@@ -30,6 +30,8 @@ GENEROS_NO_LITERATURA = [
 
 TIPOS_DE_RECIBOS = [
     "Prestamo de Libro",
+    "Renovacion de Prestamo de Libro",
+    "Devolucion de Libro",
     "Multa"
 ]
 
@@ -46,8 +48,8 @@ ESTADO_LIBRO = [
 ESTADO_PRESTAMO = [
     "Vigente",
     "Atrasado",
-    "Terminado",
     "Renovado",
+    "Terminado"
 ]
 
 ESTADO_MULTA=[

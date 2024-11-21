@@ -11,10 +11,10 @@ class Lector(Persona):
         self.__identificacion = identificacion
         self.__email = email
         
-        self.__prestamos = [] #objetos de la clase Prestamo , funciona como un historial
+        self.__prestamos = [] #instancias de Prestamo , funciona como un historial
         self.__recibos = []
         
-        self.__prestamos_vigentes = np.full((3),fill_value=None, dtype=object)
+        self.__prestamos_vigentes = np.full((3),fill_value=None, dtype=object) #instancias de Libro
         self.__nro_prestamos_vigentes = 0
         
         self.__multas = np.full((3),fill_value=None, dtype=object)
@@ -66,7 +66,7 @@ class Lector(Persona):
     
     # Metodos funcionales
     
-    def agregar_multa(self, multa=object):
+    def guardar_multa(self, multa=object):
         if self.__nro_multas < 3:
             self.__multas[self.__nro_multas] = multa
             self.__nro_multas += 1
@@ -75,6 +75,13 @@ class Lector(Persona):
         for prestamo in self.__prestamos :
             if prestamo.get_codigo() == codigo_prestamo:
                 return prestamo # retorna un objeto
+            else:
+                return None
+    
+    def buscar_recibo(self, codigo_recibo):
+        for recibo in self.__recibos:
+            if recibo.get_codigo() == codigo_recibo:
+                return recibo # retorna un objeto
             else:
                 return None
     
@@ -121,5 +128,15 @@ class Lector(Persona):
                 self.__nro_prestamos_vigentes -= 1
 
     def guardar_recibo(self, recibo:object):
-        self.__recibos.append(recibo)
+        if recibo is not None:
+            codigo_recibo = recibo.get_codigo()
+            if self.buscar_recibo(codigo_recibo) is None:
+                self.__recibos.append(recibo)
+        else:
+            print("No se generó un recibo.")
+    
+    def guardar_prestamo(self, prestamo:object):
+        codigo_prestamo = prestamo.get_codigo()
+        if self.buscar_prestamo(codigo_prestamo) is None:
+            self.__prestamos.append(prestamo)
         
