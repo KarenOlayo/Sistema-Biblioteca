@@ -11,7 +11,7 @@ class Main:
         inventario = Inventario(biblioteca)
         biblioteca.crear_archivos()
         inventario.cargar_libros_desde_archivo()
-        biblioteca.cargar_archivos()
+        biblioteca.cargar_lectores_desde_archivo()
         
         
         # estantes
@@ -35,11 +35,14 @@ class Main:
         biblioteca.agregar_lector("Karen","Vergara", datetime.date(2007,6,3),"2345","karen@gmail.com")
         biblioteca.agregar_lector("Pepe","Martinez", datetime.date(1999,9,9),"3453235","pepemartinez@gmail.com")
         
+        
         # autores
         
-        biblioteca.agregar_autor("Gabo","Gabito",datetime.date(1984,4,5),datetime.date(2010,7,3),"Colombia")
-        biblioteca.agregar_autor("Lechuza","Perez",datetime.date(1777,7,7),datetime.date(2000,2,2),"Venezuela")
-        biblioteca.agregar_autor("Laura","Esquiveq",datetime.date(1998,8,9),datetime.date(2023,12,8),"Canadá")
+        biblioteca.agregar_autor("Gabo","Gabito","12/9/1984","3/2/2000","Colombia")
+        #biblioteca.agregar_autor("Lechuza","Perez",datetime.date(1777,7,7),datetime.date(2000,2,2),"Venezuela")
+        #biblioteca.agregar_autor("Laura","Esquiveq",datetime.date(1998,8,9),datetime.date(2023,12,8),"Canadá")
+        
+        
         
         # agregar libros
                 

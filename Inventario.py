@@ -91,7 +91,7 @@ class Inventario:
                     self.__libros[self.__nro_libros] = libro 
                     self.__nro_libros += 1 
                     self.agregar_libro_estante(area_del_conocimiento, libro)
-                    self.__biblioteca.guardar_libro_en_archivo(libro)
+                    self.guardar_libro_en_archivo(libro)
                     print("Libro agregado con éxito.")
             else:
                 print("El autor no está registrado.")

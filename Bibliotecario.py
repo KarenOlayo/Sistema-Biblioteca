@@ -1,5 +1,5 @@
 from Persona import Persona
-import datetime
+from datetime import datetime
 from email_validator import validate_email, EmailNotValidError
 
 class Bibliotecario(Persona):
@@ -52,9 +52,9 @@ class Bibliotecario(Persona):
     
     def to_dict(self):
         return {
-            'nombre': self.__nombre,
-            'apellido': self.__apellido,
-            'fecha_nacimiento': self.__fecha_nacimiento.strftime('%d/%m/%Y'),
+            'nombre': self.get_nombre(),
+            'apellido': self.get_apellido(),
+            'fecha_nacimiento': self.get_fecha_nacimiento().strftime('%d/%m/%Y'),
             'identificacion': self.__identificacion,
             'email': self.__email
         }
