@@ -5,11 +5,14 @@ import datetime
 
 class Main:
     
-    def run(self):
+    def run():
         
         biblioteca = Biblioteca("Babel","Puerto Valdivia")
-        
         inventario = Inventario(biblioteca)
+        biblioteca.crear_archivos()
+        inventario.cargar_libros_desde_archivo()
+        biblioteca.cargar_archivos()
+        
         
         # estantes
         
@@ -19,9 +22,12 @@ class Main:
         biblioteca.agregar_estante("Ciencias Políticas")
         biblioteca.agregar_estante("Literatura")
         
+        
+        
         #print(biblioteca.get_estantes())
         
         biblioteca.agregar_bibliotecario("Uberney","Perez",datetime.date(1982,6,7),"32534634","uber@gmail.com")
+        
         
         # lectores
         
@@ -47,12 +53,13 @@ class Main:
         inventario.prestar_libro("Cien lagrimas","02","2345","14/11/2024")
         inventario.prestar_libro("Chocolate con cafe","234","3453235","15/11/2024")
         
+        """
         # renovar prestamo de libros
         
         inventario.renovar_prestamo("P1","12324234")
         
         # recibir libros devueltos
-        """
+
         inventario.recibir_libro_devuelto("P1","12324234","15/11/2024")
         inventario.recibir_libro_devuelto("P2","2345","01/01/2025")
         inventario.recibir_libro_devuelto("P3","3453235","18/12/2024")
@@ -62,12 +69,10 @@ class Main:
         print(inventario.listar_por_estado("Disponible"))
         print(inventario.listar_por_estado("Prestado"))
         print(inventario.listar_por_autor("Lechuza","Perez"))
-        """
-        
+
         inventario.crear_archivo_lectores()
         inventario.crear_archivo_autores()
         
+        """
 
-
-main = Main()
-main.run()
+Main.run()
