@@ -4,29 +4,6 @@ from Lector import Lector
 from datetime import datetime , timedelta
 
 class Prestamo:
-    
-    class Prestamo:
-    
-        @classmethod
-        def from_dict(cls, data, lector=Lector, libro=Libro, multa=None):
-            
-            # Convertir las fechas de las cadenas de texto a objetos datetime
-            fecha_prestamo = datetime.strptime(data['fecha_prestamo'], '%d/%m/%Y')
-            fecha_devolucion = datetime.strptime(data['fecha_devolucion'], '%d/%m/%Y')
-            fecha_entrega = datetime.strptime(data['fecha_entrega'], '%d/%m/%Y') if data['fecha_entrega'] else None
-            
-            # Crear la instancia de Prestamo con los datos
-            return cls(
-                codigo=data['codigo'],
-                lector=lector,  
-                libro=libro,    
-                fecha_prestamo=fecha_prestamo,
-                fecha_devolucion=fecha_devolucion,
-                fecha_entrega=fecha_entrega,
-                dias_duracion=data['dias_duracion'],
-                estado=data['estado'],
-                multa=multa   # La multa debe ser un objeto de la clase Multa si existe
-            )
 
     def __init__(self, codigo, lector:Lector, libro:Libro, fecha_prestamo:datetime, fecha_devolucion:datetime=None, fecha_entrega:datetime=None, dias_duracion:str=None, estado:str='Vigente', multa:object=None):
         self.__codigo = codigo
@@ -42,7 +19,6 @@ class Prestamo:
         self.__multa = None
         self.__nro_renovaciones = 0
 
-        
     def actualizar_estado(self):
         
         hoy = datetime.today().date()
@@ -56,19 +32,6 @@ class Prestamo:
                 self.__dias_duracion = (self.__fecha_entrega - self.__fecha_prestamo).days
                 return self.__dias_duracion
         return None
-    
-    def to_dict(self):
-        return {
-            'codigo': self.__codigo,
-            'identificacion_lector': self.__lector.get_identificacion(),
-            'titulo_libro': self.__libro.get_titulo(),
-            'fecha_prestamo': self.__fecha_prestamo.strftime('%d/%m/%Y'),
-            'fecha_devolucion' : self.__fecha_devolucion.strftime('%d/%m/%Y'),
-            'fecha_entrega': self.__fecha_entrega.strftime('%d/%m/%Y') if self.__fecha_entrega is not None else None ,
-            'dias_duracion': self.__dias_duracion if self.__dias_duracion is not None else None ,
-            'estado' : self.__estado,
-            'multa': self.__multa.get_codigo() if self.__multa is not None else None
-        }
     
     # Metodos accesores
     
@@ -126,7 +89,15 @@ class Prestamo:
     def comprobar_existencia_multa(self):
         if self.__multa is not None:
             codigo = self.__multa.get_codigo()
-            return f"Si. El codigo de la multa es: {codigo}"
+            dias_penalizacion = self.__multa.get_dias_penalizacion()
+            fecha_inicio = self.__multa.get_fecha_inicio()
+            fecha_fin = self.__multa.get_fecha_fin()
+            return f"""Si.
+Codigo Multa: {codigo}.
+Dias de Penalizacion: {int(dias_penalizacion)} dias.
+Fecha Inicio: {fecha_inicio}
+Fecha Fin: {fecha_fin}
+"""
         return "No"
         
         
