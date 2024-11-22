@@ -15,7 +15,8 @@ GENEROS_LITERATURA = [
     "Infantil",
     "Religioso",
     "Poesía",
-    "Ilustrado"
+    "Ilustrado",
+    "Novela"
 ]
 
 GENEROS_NO_LITERATURA = [

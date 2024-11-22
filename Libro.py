@@ -8,21 +8,6 @@ from datetime import datetime
 
 class Libro:
     
-    @classmethod
-    def from_dict(cls, data):
-        from datetime import datetime
-        return cls(
-            titulo=data['titulo'],
-            codigo_isbn=data['codigo_isbn'],
-            autor=data['autor'],
-            area_del_conocimiento=data['area_del_conocimiento'],
-            genero=data['genero'],
-            nro_paginas=int(data['nro_paginas']),
-            fecha_publicacion=datetime.strptime(data['fecha_publicacion'], '%d/%m/%Y').date(),
-            origen=data['origen'],
-            estado=data['estado']
-    )
-
     def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado="Disponible"):
           
         self.__titulo = titulo
@@ -48,19 +33,6 @@ class Libro:
             
         self.__nro_paginas = nro_paginas
         self.__fecha_publicacion = fecha_publicacion
-    
-    def to_dict(self):
-        return {
-            'titulo': self.__titulo,
-            'codigo_isbn': self.__codigo_isbn,
-            'autor': self.__autor,
-            'area_del_conocimiento': self.__area_del_conocimiento,
-            'genero': self.__genero,
-            'nro_paginas': self.__nro_paginas,
-            'fecha_publicacion': self.__fecha_publicacion.strftime('%d/%m/%Y'),
-            'origen': self.__origen,
-            'estado': self.__estado
-        }
   
     #Metodos accesores
 

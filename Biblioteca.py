@@ -21,6 +21,12 @@ class Biblioteca:
         self.__estantes = np.full((5), fill_value=None, dtype=Estante)
         self.__nro_estantes = 0
         
+        self.__libros = np.full((500), fill_value=None , dtype=Libro)
+        self.__nro_libros = 0
+        
+        self.__libros_prestados = []
+        self.__libros_disponibles = []
+        
         self.__bibliotecarios = []
         self.__lectores = []
         self.__autores = []
@@ -33,79 +39,6 @@ class Biblioteca:
         
         self.__prestamos = []
         self.__nro_prestamos_biblioteca = 0
-    
-    # sobre los archivos
-    
-    def crear_archivos(self):
-        
-        """Crea los archivos necesarios para la aplicación si no existen.
-        Inicializa encabezados en los CSV y un objeto vacío en YAML."""
-        
-        # Diccionario de archivos con sus configuraciones iniciales
-        archivos = {
-            
-        "libros.csv": ["titulo",
-                       "codigo_isbn",
-                       "autor",
-                       "area_del_conocimiento",
-                       "genero",
-                       "nro_paginas",
-                       "fecha_publicacion",
-                       "origen",
-                       "estado"],
-        
-        "bibliotecarios.csv": ["nombre",
-                               "apellido",
-                               "fecha_nacimiento",
-                               "identificacion",
-                               "email"],
-        
-        "autores.csv": ["nombre",
-                        "apellido",
-                        "fecha_nacimiento",
-                        "fecha_fallecimiento",
-                        "pais_origen"],
-        
-        "prestamos.csv": ["codigo",
-                          "identificacion_lector",
-                          "titulo_libro",
-                          "codigo_isbn",
-                          "fecha_prestamo",
-                          "fecha_devolucion",
-                          "fecha_entrega",
-                          "dias_duracion",
-                          "estado",
-                          "multa"],  
-        
-        "lectores.yaml": None,  # YAML no necesita encabezados
-        "recibos.yaml": None, 
-        "multas.yaml": None,
-    }
-        
-        for archivo, encabezados in archivos.items():
-            try:
-                if not os.path.exists(archivo):
-                    
-                    #crear el archivo dependiendo de su tipo
-                    
-                    if archivo.endswith(".csv") and encabezados is not None:
-                        
-                        # Inicializar un archivo csv con los encabezados
-                        with open(archivo, "w", newline="", encoding='utf-8') as archivo_csv:
-                            writer = csv.writer(archivo_csv)
-                            writer.writerow(encabezados)
-                        
-                    elif archivo.endswith(".yaml"):
-                        
-                        # Inicializar un archivo yaml con un objeto vacío
-                        with open(archivo, "w", encoding='utf-8') as archivo_yaml:
-                            yaml.dump([],archivo_yaml)
-                    else:
-                        # Crear archivos de texto plano vacio
-                        with open(archivo, "w", encoding='utf-8') as archivo_txt:
-                            pass
-            except Exception as e:
-                print(f"Error al crear el archivo {archivo}: {str(e)}")
                 
     # Metodos Accesores
 
@@ -120,6 +53,18 @@ class Biblioteca:
     
     def get_nro_estantes(self):
         return self.__nro_estantes
+    
+    def get_libros(self):
+        return self.__libros
+    
+    def get_nro_libros(self):
+        return self.__nro_libros
+    
+    def get_libros_prestados(self):
+        return self.__libros_prestados
+    
+    def get_libros_disponibles(self):
+        return self.__libros_disponibles
     
     def get_bibliotecarios(self):
         return self.__bibliotecarios
@@ -197,6 +142,36 @@ class Biblioteca:
             if recibo.get_codigo() == codigo_recibo:
                 return recibo
         return None
+    
+    def buscar_libro(self, titulo, codigo_isbn): 
+        for indice, libro in enumerate(self.__libros):
+            if indice >= self.__nro_libros: #¿>= o > ?
+                break
+            if libro is not None and libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
+                return indice, libro 
+        return -1 , None 
+    
+    def buscar_libro_disponible(self, titulo, codigo_isbn):
+        for libro in self.__libros_disponibles:
+            if libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
+                return libro
+        return None
+    
+    def buscar_libro_prestado(self, titulo, codigo_isbn):
+        for libro in self.__libros_prestados:
+            if libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
+                return libro
+        return None
+        
+    def verificar_autor(self, autor:str): # se ingresa el nombre y apellido del autor separado por espacio
+        nombre_apellido = autor.split()
+        if len(nombre_apellido) == 2:
+            nombre, apellido = nombre_apellido
+            obj_autor = self.buscar_autor(nombre, apellido)
+            if obj_autor is not None:
+                return obj_autor
+        return None
+    
     # Metodos de agregacion
 
     def agregar_estante(self, area_del_conocimiento):
@@ -211,22 +186,246 @@ class Biblioteca:
         if self.buscar_bibliotecario(identificacion) == None:
             bibliotecario = Bibliotecario(nombre, apellido, fecha_nacimiento, identificacion, email)
             self.__bibliotecarios.append(bibliotecario)
-            self.guardar_bibliotecario_en_archivo(bibliotecario)
             print(f"Bibliotecario {nombre} agregado con exito")
 
     def agregar_autor(self, nombre, apellido, fecha_nacimiento, fecha_fallecimiento, pais_origen):
         if self.buscar_autor(nombre, apellido) == None : 
             autor = Autor(nombre, apellido, fecha_nacimiento, fecha_fallecimiento, pais_origen)
             self.__autores.append(autor)
-            self.guardar_autor_en_archivo(autor)
             print(f"Autor {nombre} {apellido} agregado con exito")
 
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         if self.buscar_lector(identificacion) == None :
             lector = Lector(nombre, apellido, fecha_nacimiento, identificacion, email)
             self.__lectores.append(lector)
-            self.guardar_lector_en_archivo(lector)
             print(f"Lector {nombre} agregado.")
+    
+    def agregar_libro(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen):
+        _, libro = self.buscar_libro(titulo, codigo_isbn)
+        if libro is None:
+            autor_valido = self.verificar_autor(autor)
+            if autor_valido is not None:
+                if self.__nro_libros < len(self.__libros):
+                    libro = Libro(titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen)
+                    self.__libros[self.__nro_libros] = libro 
+                    self.__nro_libros += 1 
+                    self.agregar_libro_estante(area_del_conocimiento, libro)
+                    print("Libro agregado con éxito.")
+            else:
+                print("El autor no está registrado.")
+        else:
+            print("El libro ya existe.")
+                
+    def agregar_libro_estante(self, area_del_conocimiento, libro:Libro):
+        _, estante = self.buscar_estante(area_del_conocimiento)
+        if estante is not None:
+            if estante.get_nro_libros_estante() < len(estante.get_libros_estante()):
+                estante.get_libros_estante()[estante.get_nro_libros_estante()] = libro
+                estante.incrementar_nro_libros_estante() #suma 1 al nro de libros del estante
+    
+    def agregar_libro_disponible(self, libro=Libro):
+        titulo = libro.get_titulo()
+        codigo_isbn = libro.get_codigo_isbn()
+        
+        if self.buscar_libro_disponible(titulo, codigo_isbn) is None:
+            self.__libros_disponibles.append(libro)
+            return True
+        return False
+    
+    def agregar_libro_prestado(self, libro=Libro):
+        titulo = libro.get_titulo()
+        codigo_isbn = libro.get_codigo_isbn()
+        
+        if self.buscar_libro_prestado(titulo, codigo_isbn) is None:
+            self.__libros_prestados.append(libro)
+            return True
+        return False
+    
+    def eliminar_libro_biblioteca(self, titulo, codigo_isbn):        
+        indice, libro = self.buscar_libro(titulo, codigo_isbn)
+        if libro is not None:
+            area_del_conocimiento = libro.get_area_del_conocimiento()
+            _, estante = self.buscar_estante(area_del_conocimiento)
+            if indice != -1:
+                for i in range(indice, self.__nro_libros-1):
+                    self.__libros[i] = self.__libros[i+1]
+                self.__libros[self.__nro_libros-1] = None 
+                self.__nro_libros -= 1
+            
+                estante.eliminar_libro_estante(titulo, codigo_isbn)
+                print("Libro eliminado de la biblioteca.")
+                
+    def eliminar_libro_disponible(self, titulo, codigo_isbn):
+        for libro in self.__libros_disponibles:
+            if libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
+                self.__libros_disponibles.remove(libro)
+    
+    def eliminar_libro_prestado(self, titulo, codigo_isbn):
+        for libro in self.__libros_prestados:
+            if libro.get_titulo() == titulo and libro.get_codigo_isbn() == codigo_isbn:
+                self.__libros_prestados.remove(libro)
+    
+    # Metodos funcionales
+    
+    def prestar_libro(self, titulo, codigo_isbn, identificacion_lector, fecha_prestamo):
+        
+        lector = self.buscar_lector(identificacion_lector) #retorna un objeto
+        
+        if lector is None:
+            print(f"No se puede realizar el préstamo. Lector {identificacion_lector} no encontrado.")
+            return
+        
+        lector_cumple_requisitos = lector.verificar_requisitos_prestamo()
+        
+        if lector_cumple_requisitos == False:
+            print(f"No se puede realizar el préstamo. Lector {identificacion_lector} no cumple con los requisitos para el préstamo.")
+            return
+        
+        indice, libro = self.buscar_libro(titulo, codigo_isbn)
+        
+        if indice == -1 and libro is None:
+            print(f"No se puede realizar el préstamo. Libro {titulo} no encontrado.")
+            return
+        
+        if libro.get_estado() == "Disponible":
+            
+            libro.set_estado("Prestado")
+    
+            prestamo = self.generar_prestamo(lector, libro, fecha_prestamo)
+            recibo = self.generar_recibo(prestamo, lector)
+            
+            self.guardar_prestamo(prestamo)
+            self.guardar_recibo(recibo)
+                            
+            lector.guardar_prestamo(prestamo)
+            lector.guardar_recibo(recibo)
+            lector.agregar_libro_a_prestamos_vigentes(libro)
+            
+            self.eliminar_libro_disponible(titulo, codigo_isbn)
+            self.agregar_libro_prestado(libro)
+                            
+            print("Préstamo realizado con éxito.")
+            print(recibo)
+        
+    def renovar_prestamo(self, codigo_prestamo, identificacion_lector):
+        lector = self.buscar_lector(identificacion_lector)
+        prestamo = self.buscar_prestamo(codigo_prestamo)
+        
+        if prestamo is None:
+            print(f"El préstamo {codigo_prestamo} no existe. No se pudo renovar el préstamo.")
+            return
+        
+        estado_prestamo = prestamo.get_estado_prestamo()
+        
+        if lector is not None:
+            if prestamo is not None and estado_prestamo == "Vigente":
+                cumple_requisitos = lector.verificar_requisitos_renovacion(codigo_prestamo)
+                if cumple_requisitos == True:
+                    fecha_devolucion_inicial = prestamo.get_fecha_devolucion()
+                    nueva_fecha_devolucion = fecha_devolucion_inicial + timedelta(days=30)
+                    prestamo.set_fecha_devolucion(nueva_fecha_devolucion)
+                    prestamo.incrementar_nro_renovaciones()
+                    prestamo.set_estado("Renovado")
+                    
+                    recibo = self.generar_recibo(prestamo, lector)
+                    self.guardar_recibo(recibo)
+                    lector.guardar_recibo(recibo)
+                    
+                    print("Prestamo renovado exitosamente.")
+                    print(recibo)
+    
+    def recibir_libro_devuelto(self, codigo_prestamo, identificacion_lector, fecha_entrega):
+        
+        lector = self.buscar_lector(identificacion_lector)
+        prestamo = self.buscar_prestamo(codigo_prestamo)
+        fecha_prestamo  = prestamo.get_fecha_prestamo()
+        
+        if prestamo is not None:
+            if lector is not None:
+                if datetime.strptime(fecha_entrega, '%d/%m/%Y').date() >= fecha_prestamo:
+                    if prestamo.get_lector().get_identificacion() == identificacion_lector:
+                        libro = prestamo.get_libro()
+                        if libro is not None:
+                            libro.set_estado("Disponible")
+                
+                            self.eliminar_libro_prestado(libro.get_titulo(),libro.get_codigo_isbn())
+                            self.agregar_libro_disponible(libro)
+            
+                            lector.eliminar_libro_de_prestamos_vigentes(libro)                    
+                        
+                            prestamo.set_fecha_entrega(fecha_entrega)
+                            prestamo.set_estado("Terminado")
+                                            
+                            multa = self.calcular_multa(prestamo, lector)
+                            if multa is not None:
+                                prestamo.set_multa(multa)
+                                lector.guardar_multa(multa)
+                                self.guardar_multa(multa)
+                                #print(multa)
+                    
+                                recibo_multa = self.generar_recibo(multa, lector)
+                                self.guardar_recibo(recibo_multa)
+                                lector.guardar_recibo(recibo_multa)
+                                print(recibo_multa)
+                
+                            recibo_devolucion = self.generar_recibo(prestamo,lector)
+                            self.guardar_recibo(recibo_devolucion)
+                            lector.guardar_recibo(recibo_devolucion)
+                            print("Libro devuelto exitosamente.")
+                            print(recibo_devolucion)   
+                            
+                        else:
+                            print("El libro del préstamo no es válido.")
+                    else:
+                        print(f"El lector {identificacion_lector} no corresponde con el lector del préstamo {codigo_prestamo}")
+                else:
+                    print("La fecha de entrega es anterior a la fecha de préstamo.")
+            else:
+                print(f"El lector con identificación {identificacion_lector} no existe")
+        else:
+            print(f"El préstamo {codigo_prestamo} no existe")
+   
+    # Metodos para listar
+    
+    def listar_por_estado(self,estado):
+        listado_libros = []
+        for libro in range(self.__nro_libros):
+            if self.__libros[libro] is not None and self.__libros[libro].get_estado() == estado:
+                if estado == "Disponible" :
+                    listado_libros.append(self.__libros[libro])
+                if estado == "Prestado" :
+                    listado_libros.append(self.__libros[libro])
+        return listado_libros
+    
+    def listar_por_autor(self, nombre, apellido):
+        listado_libros = []
+        for libro in range(self.__nro_libros):
+            if self.__libros[libro] is not None:
+                autor = self.__libros[libro].get_autor()
+                if f"{nombre} {apellido}" == autor:
+                    listado_libros.append(self.__libros[libro])
+        return listado_libros
+    
+    def listar_por_area_del_conocimiento(self, area_del_conocimiento):
+        listado_libros = []
+        for libro in range(self.__nro_libros):
+            if self.__libros[libro].get_area_del_conocimiento() == area_del_conocimiento:
+                listado_libros.append(self.__libros[libro])
+        return listado_libros
+    
+    def listar_por_genero(self, genero):
+        listado_libros = []
+        for libro in range(self.__nro_libros):
+            if self.__libros[libro].get_genero() == genero:
+                listado_libros.append(self.__libros[libro])
+        return listado_libros
+    
+    def listar_por_fecha_publicacion(self, fecha_publicacion):
+        listado_libros = []
+        for libro in range(self.__nro_libros):
+            if self.__libros[libro].get_fecha_publicacion() == fecha_publicacion:
+                listado_libros.append(self.__libros[libro])
+        return listado_libros
     
     # metodos para guardar
     
@@ -257,21 +456,22 @@ class Biblioteca:
     
     # Sobre las multas
     
-    """
+    
     def calcular_dias_retraso(self, prestamo=Prestamo):
         fecha_devolucion = prestamo.get_fecha_devolucion()
         fecha_entrega_libro = prestamo.get_fecha_entrega()
-        dias_retraso = (fecha_entrega_libro - fecha_devolucion)/timedelta(days=1)
-        return dias_retraso
-    """
+        if fecha_entrega_libro is not None:
+            dias_retraso = (fecha_entrega_libro - fecha_devolucion)/timedelta(days=1)
+            return dias_retraso
+        else:
+            return None
     
     def calcular_multa(self, prestamo=Prestamo, lector=Lector):
         
-        fecha_devolucion = prestamo.get_fecha_devolucion()
         fecha_entrega_libro = prestamo.get_fecha_entrega()
         
         if fecha_entrega_libro is not None:
-            dias_retraso = (fecha_entrega_libro - fecha_devolucion)/timedelta(days=1)
+            dias_retraso = self.calcular_dias_retraso(prestamo)
             
             if dias_retraso > 0:
                 dias_penalizacion = dias_retraso*2        
@@ -344,6 +544,7 @@ Fecha Préstamo: {objeto.get_fecha_prestamo()}
 Fecha Devolución: {objeto.get_fecha_devolucion()}
 Fecha Entrega: {objeto.get_fecha_entrega()}
 Duración Préstamo: {objeto.get_dias_duracion()} dias
+Dias Retraso: {int(self.calcular_dias_retraso(objeto))} dias
 Multa: {objeto.comprobar_existencia_multa()}"""
                     
                     recibo = Recibo(nombre_biblioteca, codigo_recibo, "Devolucion de Libro", fecha_recibo,lector,informacion)
@@ -396,225 +597,3 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
         autor = self.buscar_autor(nombre, apellido)
         if autor is not None:
             self.__autores.remove(autor)
-    
-    # Metodos para guardar en archivos
-    
-    def guardar_lector_en_archivo(self, lector=Lector):
-        
-        datos_lector = lector.to_dict()
-        file_path = 'lectores.yaml'
-        
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as archivo:
-                try:
-                    lectores = yaml.safe_load(archivo) or []
-                except yaml.YAMLError:
-                    lectores = []
-        else:
-            lectores = []
-        
-        lectores.append(datos_lector)
-        
-        with open(file_path, "a", encoding="utf-8") as archivo:
-            yaml.dump(lectores, archivo, default_flow_style=False, allow_unicode=True)
-                        
-    def guardar_bibliotecario_en_archivo(self, bibliotecario=Bibliotecario):
-        
-        """Guarda la informacion de un bibliotecario en el archivo bibliotecarios.csv"""
-        
-        datos_bibliotecario = bibliotecario.to_dict()
-        
-        with open('bibliotecarios.csv','a',newline='',encoding='utf-8') as archivo :
-            writer = csv.DictWriter(archivo, fieldnames=datos_bibliotecario.keys())
-            
-            if archivo.tell() == 0:
-               writer.writeheader()
-
-            writer.writerow(datos_bibliotecario)
-
-    def guardar_autor_en_archivo(self, autor=Autor):
-        
-        """Guarda la informacion de un autor en el archivo autores.csv"""
-        
-        datos_autor = autor.to_dict()
-        
-        with open('autores.csv','a',newline='',encoding='utf-8') as archivo:
-            writer = csv.DictWriter(archivo, fieldnames=datos_autor.keys())
-            
-            if archivo.tell() == 0:
-                writer.writeheader()
-            
-            writer.writerow(datos_autor)
-    
-    def guardar_prestamo_en_archivo(self, prestamo=Prestamo):
-        
-        """Guarda la informacion de un prestamo en el archivo prestamos.csv"""
-        
-        datos_prestamo = prestamo.to_dict()
-        
-        with open('prestamos.csv','a',newline='',encoding='utf-8') as archivo:
-            writer = csv.DictWriter(archivo, fieldnames=datos_prestamo.keys())
-            
-            if archivo.tell() == 0:  
-                writer.writeheader()
-                
-            writer.writerow(datos_prestamo) 
-        
-    def guardar_recibo_en_archivo(self, recibo=Recibo):
-        
-        """Guarda la informacion de un prestamo en el archivo recibos.yaml"""
-        
-        datos_recibo = recibo.to_dict()
-        datos = {'recibo': datos_recibo}
-        with open('recibos.yaml','a') as archivo:
-            yaml.dump(datos, archivo, default_flow_style=False, allow_unicode=True)
-    
-    def guardar_multa_en_archivo(self, multa=Multa):
-        
-        """Guarda la informacion de una multa en el archivo multas.yaml"""
-        
-        datos_multa = multa.to_dict()
-        datos = {'multa': datos_multa}
-        with open('multas.yaml','a') as archivo:
-            yaml.dump(datos, archivo, default_flow_style=False, allow_unicode=True)
-    
-    # Cargar archivos
-
-    """
-    def cargar_archivos(self):
-        
-        #Carga todos los datos desde los archivos especificados.
-        
-        # Nombres de los archivos
-        bibliotecarios_file = 'bibliotecarios.csv'
-        autores_file = 'autores.csv'
-        lectores_file = 'lectores.yaml'
-        prestamos_file = 'prestamos.csv'
-        multas_file = 'multas.yaml'
-        recibos_file = 'recibos.yaml'
-
-        # Cargar bibliotecarios desde CSV
-        with open(bibliotecarios_file, mode='r', encoding='utf-8') as archivo:
-            reader = csv.DictReader(archivo)
-            for fila in reader:
-                try:
-                    bibliotecario = Bibliotecario.from_dict(fila)
-                    self.__bibliotecarios.append(bibliotecario)
-                except ValueError as e:
-                    print(f"Error al cargar bibliotecario: {e}")
-
-        # Cargar autores desde CSV
-        with open(autores_file, mode='r', encoding='utf-8') as archivo:
-            reader = csv.DictReader(archivo)
-            for fila in reader:
-                try:
-                    autor = Autor.from_dict(fila)
-                    self.__autores.append(autor)
-                    print(f"Se cargaron los autores desde {archivo}")
-                except ValueError as e:
-                    print(f"Error al cargar autor: {e}")
-
-        # Cargar lectores desde YAML
-        with open(lectores_file, mode='r', encoding='utf-8') as archivo:
-            lectores_data = yaml.safe_load(archivo)
-            for lector_dict in lectores_data:
-                try:
-                    lector = Lector.from_dict(lector_dict)
-                    self.__lectores.append(lector)
-                except ValueError as e:
-                    print(f"Error al cargar lector: {e}")
-
-        # Cargar préstamos desde CSV
-        with open(prestamos_file, mode='r', encoding='utf-8') as archivo:
-            reader = csv.DictReader(archivo)
-            for fila in reader:
-                try:
-                    prestamo = Prestamo.from_dict(fila)
-                    self.__prestamos.append(prestamo)
-                except ValueError as e:
-                    print(f"Error al cargar préstamo: {e}")
-
-        # Cargar multas desde YAML
-        with open(multas_file, mode='r', encoding='utf-8') as archivo:
-            multas_data = yaml.safe_load(archivo)
-            for multa_dict in multas_data:
-                try:
-                    multa = Multa.from_dict(multa_dict)
-                    self.__multas.append(multa)
-                except ValueError as e:
-                    print(f"Error al cargar multa: {e}")
-
-        # Cargar recibos desde YAML
-        with open(recibos_file, mode='r', encoding='utf-8') as archivo:
-            recibos_data = yaml.safe_load(archivo)
-            for recibo_dict in recibos_data:
-                try:
-                    recibo = Recibo.from_dict(recibo_dict)
-                    self.__recibos.append(recibo)
-                except ValueError as e:
-                    print(f"Error al cargar recibo: {e}")
-    """
-    
-    def cargar_lectores_desde_archivo(self, archivo='lectores.yaml'):
-        with open(archivo, mode='r', encoding='utf-8') as archivo:
-            lectores = yaml.safe_load(archivo)
-            
-            if lectores and lectores[0] == []:
-                lectores.pop(0)
-                
-            for lector in lectores:
-                try:
-                    lector = Lector.from_dict(lector, self.__prestamos, self.__multas, self.__recibos)
-                    self.__lectores.append(lector)
-                except ValueError as e:
-                    print(f"Error al cargar lector: {e}")
-    
-    def cargar_bibliotecarios_desde_archivo(self, archivo='bibliotecarios.csv'):
-        with open(archivo, mode='r', encoding='utf-8') as archivo:
-            reader = csv.DictReader(archivo)
-            for fila in reader:
-                try:
-                    bibliotecario = Bibliotecario.from_dict(fila)
-                    self.__bibliotecarios.append(bibliotecario)
-                except ValueError as e:
-                    print(f"Error al cargar bibliotecario: {e}")
-    
-    def cargar_autores_desde_archivo(self, archivo='autores.csv'):
-        with open(archivo, mode='r', encoding='utf-8') as archivo:
-            reader = csv.DictReader(archivo)
-            for fila in reader:
-                try:
-                    autor = Autor.from_dict(fila)
-                    self.__autores.append(autor)
-                except ValueError as e:
-                    print(f"Error al cargar autor: {e}")
-    
-    def cargar_prestamos_desde_archivo(self, archivo='prestamos.csv'):
-        with open(archivo, mode='r', encoding='utf-8') as archivo:
-                reader = csv.DictReader(archivo)
-                for fila in reader:
-                    try:
-                        prestamo = Prestamo.from_dict(fila)
-                        self.__prestamos.append(prestamo)
-                    except ValueError as e:
-                        print(f"Error al cargar préstamo: {e}")
-    
-    def cargar_multas_desde_archivo(self, archivo='multas.yaml'):
-        with open(archivo, mode='r', encoding='utf-8') as archivo:
-            multas_data = yaml.safe_load(archivo)
-            for multa_dict in multas_data:
-                try:
-                    multa = Multa.from_dict(multa_dict)
-                    self.__multas.append(multa)
-                except ValueError as e:
-                    print(f"Error al cargar multa: {e}")
-                    
-    def cargar_recibos_desde_archivo(self, archivo='recibos.yaml'):
-        with open(archivo, mode='r', encoding='utf-8') as archivo:
-            recibos_data = yaml.safe_load(archivo)
-            for recibo_dict in recibos_data:
-                try:
-                    recibo = Recibo.from_dict(recibo_dict)
-                    self.__recibos.append(recibo)
-                except ValueError as e:
-                    print(f"Error al cargar recibo: {e}")
