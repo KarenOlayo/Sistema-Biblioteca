@@ -200,13 +200,13 @@ class Biblioteca:
             self.__lectores.append(lector)
             print(f"Lector {nombre} agregado.")
     
-    def agregar_libro(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen):
+    def agregar_libro(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, anio_publicacion, origen):
         _, libro = self.buscar_libro(titulo, codigo_isbn)
         if libro is None:
             autor_valido = self.verificar_autor(autor)
             if autor_valido is not None:
                 if self.__nro_libros < len(self.__libros):
-                    libro = Libro(titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen)
+                    libro = Libro(titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, anio_publicacion, origen)
                     self.__libros[self.__nro_libros] = libro 
                     self.__nro_libros += 1 
                     self.agregar_libro_estante(area_del_conocimiento, libro)
@@ -241,7 +241,7 @@ class Biblioteca:
             return True
         return False
     
-    def eliminar_libro_biblioteca(self, titulo, codigo_isbn):        
+    def eliminar_libro(self, titulo, codigo_isbn):        
         indice, libro = self.buscar_libro(titulo, codigo_isbn)
         if libro is not None:
             area_del_conocimiento = libro.get_area_del_conocimiento()
@@ -420,10 +420,10 @@ class Biblioteca:
                 listado_libros.append(self.__libros[libro])
         return listado_libros
     
-    def listar_por_fecha_publicacion(self, fecha_publicacion):
+    def listar_por_anio_publicacion(self, anio_publicacion):
         listado_libros = []
         for libro in range(self.__nro_libros):
-            if self.__libros[libro].get_fecha_publicacion() == fecha_publicacion:
+            if self.__libros[libro].get_anio_publicacion() == anio_publicacion:
                 listado_libros.append(self.__libros[libro])
         return listado_libros
     
@@ -597,3 +597,4 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
         autor = self.buscar_autor(nombre, apellido)
         if autor is not None:
             self.__autores.remove(autor)
+            print(f"Autor {nombre} {apellido} eliminado con exito.")

@@ -8,7 +8,7 @@ from datetime import datetime
 
 class Libro:
     
-    def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, fecha_publicacion, origen, estado="Disponible"):
+    def __init__(self, titulo, codigo_isbn, autor, area_del_conocimiento, genero, nro_paginas, anio_publicacion, origen, estado="Disponible"):
           
         self.__titulo = titulo
         self.__codigo_isbn = codigo_isbn
@@ -32,7 +32,7 @@ class Libro:
             self.__estado = estado
             
         self.__nro_paginas = nro_paginas
-        self.__fecha_publicacion = fecha_publicacion
+        self.__anio_publicacion = anio_publicacion
   
     #Metodos accesores
 
@@ -54,8 +54,8 @@ class Libro:
     def get_nro_paginas(self):
         return self.__nro_paginas
 
-    def get_fecha_publicacion(self):
-        return self.__fecha_publicacion
+    def get_anio_publicacion(self):
+        return self.__anio_publicacion
 
     def  get_origen(self):
         return self.__origen
@@ -68,10 +68,10 @@ class Libro:
     def set_titulo(self, nuevo_titulo):
         self.__titulo = nuevo_titulo
 
-    def  set_codigo_isbn(self, nuevo_codigo_isbn):
+    def set_codigo_isbn(self, nuevo_codigo_isbn):
         self.__codigo_isbn = nuevo_codigo_isbn
 
-    def   set_area_del_conocimiento(self, nueva_area_del_conocimiento):
+    def set_area_del_conocimiento(self, nueva_area_del_conocimiento):
         self.__area_del_conocimiento = nueva_area_del_conocimiento
 
     def set_genero(self, nuevo_genero):
@@ -92,4 +92,4 @@ class Libro:
     # Metodo representacion
     
     def __repr__(self):
-        return f"('{self.__titulo}', '{self.__codigo_isbn}', '{self.__autor}')"
+        return f"<Titulo: '{self.__titulo}' | Código ISBN: '{self.__codigo_isbn}' | Autor: '{self.__autor}' | Año Publicación: '{self.__anio_publicacion}'>"
