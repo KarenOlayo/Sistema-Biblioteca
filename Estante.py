@@ -30,11 +30,6 @@ class Estante:
     
     def incrementar_nro_libros_estante(self):
         self.__nro_libros_estante += 1
-        
-    # Metodo str
-    
-    def __repr__(self):
-        return f"Estante de '{self.__area_del_conocimiento}'"
     
     # Metodos funcionales
         
@@ -48,10 +43,19 @@ class Estante:
         return -1, None
     
     def eliminar_libro_estante(self, titulo, codigo_isbn):
-        indice, libro = self.buscar_libro_estante(titulo, codigo_isbn)
+        indice, _, = self.buscar_libro_estante(titulo, codigo_isbn)
         if indice != -1:
             for i in range(indice, self.__nro_libros_estante-1):
                 self.__libros_estante[i] = self.__libros_estante[i+1]
             self.__libros_estante[self.__nro_libros_estante-1] = None
             self.__nro_libros_estante -= 1
-            print("Libro eliminado del estante.")
+            return True
+        return False
+    
+    # Metodo de representacion
+    
+    def __repr__(self):
+        return f"""
+Estante de '{self.__area_del_conocimiento}'
+No. Libros: '{self.__nro_libros_estante}'
+"""

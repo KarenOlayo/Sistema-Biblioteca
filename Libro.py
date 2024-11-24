@@ -92,4 +92,14 @@ class Libro:
     # Metodo representacion
     
     def __repr__(self):
-        return f"<Titulo: '{self.__titulo}' | Código ISBN: '{self.__codigo_isbn}' | Autor: '{self.__autor}' | Año Publicación: '{self.__anio_publicacion}'>"
+        return f"""
+Titulo: '{self.__titulo}'
+Código ISBN: '{self.__codigo_isbn}'
+Autor: '{self.__autor}'
+Área del Conocimiento: '{self.__area_del_conocimiento}'
+Género: '{self.__genero}'
+Nro. Páginas: '{self.__nro_paginas}'
+Año Publicación: '{self.__anio_publicacion}'
+Origen: '{self.__origen}'
+Estado: '{self.__estado}'
+"""

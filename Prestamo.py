@@ -104,4 +104,16 @@ Fecha Fin: {fecha_fin}
     # Metodo repr
     
     def __repr__(self):
-        return f"Codigo Prestamo: {self.__codigo}"
+        return f"""
+Código: '{self.__codigo}'
+Identificación Lector: '{self.__lector.get_identificacion()}'
+Titulo Libro: '{self.__libro.get_titulo()}'
+Código ISBN: '{self.__libro.get_codigo_isbn()}'
+Estado: '{self.__estado}'
+Fecha Préstamo: '{self.__fecha_prestamo}'
+Fecha Devolución: '{self.__fecha_devolucion}'
+Fecha Entrega: '{self.__fecha_entrega}'
+Duración: '{self.__dias_duracion} días.'
+Estado: '{self.__estado}'
+Multa: '{self.__multa.get_codigo()}'
+"""

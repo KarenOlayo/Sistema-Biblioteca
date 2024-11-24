@@ -1,4 +1,5 @@
 from Biblioteca import Biblioteca
+import numpy as np
 import pickle
 import os
 
@@ -18,18 +19,18 @@ class Main:
                 return biblioteca
         else:
             # Si no existe, se inicializa una biblioteca vacía y se guarda el archivo
-            biblioteca = Biblioteca("Babel","Puerto Valdivia")
+            biblioteca = Biblioteca("Babel")
             print("Biblioteca creada exitosamente.")
             Main.guardar_biblioteca(biblioteca)
         
-    def guardar_biblioteca(biblioteca):
+    def guardar_biblioteca(biblioteca:Biblioteca):
         
         """Guarda la biblioteca en un archivo"""
         
         with open(Main.ARCHIVO_BIBLIOTECA, 'wb') as archivo:
             pickle.dump(biblioteca, archivo)
             print("Biblioteca guardada exitosamente.")
-            
+    
     def run():
         
         biblioteca = Main.cargar_biblioteca()
@@ -40,12 +41,13 @@ class Main:
             biblioteca.agregar_estante("Ciencias Humanas")
             biblioteca.agregar_estante("Ciencias Políticas")
             biblioteca.agregar_estante("Literatura")
+            
         else:
-            print("No se pudo cargar la biblioteca. Inténtelo nuevamente.")
+            print("No se pudo cargar la biblioteca. Inténtelo nuevamente.")  
         
         while True:
             Main.mostrar_menu_principal()
-            opcion = int(input("¿Qué desea hacer? (1-9): "))
+            opcion = int(input("¿Qué desea hacer?: "))
             if opcion == 1:
                 Main.gestionar_biblioteca(biblioteca)
             elif opcion == 2:
@@ -57,12 +59,10 @@ class Main:
             elif opcion == 5:
                 Main.gestionar_autores(biblioteca)
             elif opcion == 6:
-                Main.gestionar_prestamos(biblioteca)
-            elif opcion == 7:
                 Main.guardar_y_salir(biblioteca)
                 break
             else:
-                print("Opción inválida.")
+                print(f"Opción {opcion} inválida. Por favor, intente nuevamente.")
             
     def mostrar_menu_principal():
         print("""\n--------MENÚ PRINCIPAL--------\n
@@ -71,20 +71,24 @@ class Main:
     3. Gestionar Lectores.
     4. Gestionar Bibliotecarios.
     5. Gestionar Autores.
-    6. Gestionar Préstamos.
-    7. Guardar y Salir\n
+    6. Guardar y Salir\n
     """)
 
     def mostrar_menu_biblioteca():
         print("""\n--------MENÚ BIBLIOTECA--------\n
 1. Buscar Multa.
 2. Buscar Recibo.
-3. Mostrar Libros Registrados.
-4. Mostrar Lectores Registrados.
-5. Mostrar Bibliotecarios Registrados.
-6. Mostrar Autores Registrados.
-7. Volver al Menú Principal.
-8. Guardar y Salir\n""")
+3. Buscar Préstamo.
+4. Consultar Multa Asociada a un Préstamo.
+5. Listar Libros Registrados.
+6. Listar Lectores Registrados.
+7. Listar Bibliotecarios Registrados.
+8. Listar Autores Registrados.
+9. Listar Préstamos Realizados.
+10. Listar Multas Generadas.
+11. Listar Estantes Biblioteca.
+12. Cambiar Nombre Bilioteca.
+13. Volver al Menú Principal.""")
     
     def mostrar_menu_libros():
         print("""\n---------MENÚ LIBROS---------\n
@@ -101,77 +105,190 @@ class Main:
 
     def mostrar_menu_lectores():
         print("""\n---------MENÚ LECTORES---------\n
-    1. Agregar Lector.
-    2. Eliminar Lector.
-    3. Buscar Lector.
-    4. Volver al Menú Principal.
-    5. Guardar y Salir.\n
+1. Agregar Lector.
+2. Eliminar Lector.
+3. Buscar Lector.
+4. Listar Préstamos.
+5. Listar Multas.
+6. Listar Recibos.
+7. Listar Préstamos Vigentes.
+8. Consultar Número de Multas.
+9. Volver al Menú Principal.
     """)
 
     def mostrar_menu_bibliotecarios():
         print("""\n---------MENÚ BIBLIOTECARIOS---------\n
-    1. Agregar Bibliotecario.
-    2. Eliminar Bibliotecario.
-    3. Buscar Bibliotecario.
-    4. Volver al Menú Principal.
-    5. Guardar y Salir.\n
-    """)
+1. Agregar Bibliotecario.
+2. Eliminar Bibliotecario.
+3. Buscar Bibliotecario.
+4. Volver al Menú Principal.
+""")
 
     def mostrar_menu_autores():
         print("""\n---------MENÚ AUTORES---------\n
-    1. Agregar Autor.
-    2. Eliminar Autor.
-    3. Buscar Autor.
-    4. Volver al Menú Principal.
-    5. Guardar y Salir.\n
-    """)
-
-    def mostrar_menu_prestamos():
-        print("""\n---------MENÚ PRÉSTAMOS---------\n
-1. Buscar Préstamo.
-2. Consultar Multa Asociada Préstamo.
-3. Volver al Menú Principal.
-4. Guardar y Salir. """)
+1. Agregar Autor.
+2. Eliminar Autor.
+3. Buscar Autor.
+4. Volver al Menú Principal.
+""")
         
-    def mostrar_opciones_listar_libros(biblioteca):
-        print("""
+    def mostrar_opciones_listar_libros(biblioteca:Biblioteca):
+        print("""\nLas opciones de listar son:\n
 1. Listar Libros por Estado.
 2. Listar Libros por Autor.
 3. Listar Libros por Área del Conocimiento.
 4. Listar Libros por Género.
-5. Listar Libros por Fecha de Publicación.
-""")
+5. Listar Libros por Fecha de Publicación.""")
     
-    def gestionar_biblioteca(biblioteca):
+    def gestionar_biblioteca(biblioteca:Biblioteca):
         
         while True:
             
             Main.mostrar_menu_biblioteca()
             opcion = int(input("Ingrese una opción: "))
             
-            if opcion == 1:
-                Main.buscar_multa()
+            if opcion == 1: # Buscar Multa
                 
-            elif opcion == 2:
-                Main.buscar_recibo()
+                codigo_multa = input("Ingrese el código de la multa: ")
+                multa = biblioteca.buscar_multa(codigo_multa)
             
-            elif opcion == 3: # Mostrar libros registrados
+                if multa is not None:
+                    print(multa)
+                else:
+                    print(f"La multa {codigo_multa} no existe. ")
+                    
+            elif opcion == 2: # Buscar recibo
+                
+                codigo_recibo = input("Ingrese el código del recibo: ")
+                recibo = biblioteca.buscar_recibo(codigo_recibo)
+                
+                if recibo is not None:
+                    print(recibo)
+                else:
+                    print(f"Recibo {codigo_recibo} no encontrado.")
+            
+            elif opcion == 3: # Buscar prestammo
+                
+                codigo_prestamo = input("Ingrese el código del Préstamo: ")
+                prestamo = biblioteca.buscar_prestamo(codigo_prestamo)
+                
+                if prestamo is not None:
+                    print(prestamo)
+                else:
+                    print(f"Préstamo {codigo_prestamo} no encontrado.")
+            
+            elif opcion == 4: # Consultar multa asociada a un prestamo
+                
+                codigo_prestamo = input("Ingrese el codigo del prestamo:")
+                prestamo = biblioteca.buscar_prestamo(codigo_prestamo)
+                
+                if prestamo is not None:
+                    multa = prestamo.get_multa()
+                    if multa is not None:
+                        print(f"""Información de la Multa del Préstamo {codigo_prestamo}:\n
+{multa}""")
+                    else:
+                        print(f"El Préstamo {codigo_prestamo} no tiene una multa asociada. ")
+                else:
+                    print(f"No se pudo comprobar la existencia de una Multa. Prestamo {codigo_prestamo} no encontrado.")
+                      
+            elif opcion == 5: # Listar libros registrados
                 
                 libros = biblioteca.get_libros() # Retorna una ndarray
                 
-                if libros.size >= 1:
+                if np.any(libros is not None): # Verifica si el ndarray tiene al menos un elemento no Noneany
                     print("\nLos Libros registrados son:\n")
-                    for i in range(len(libros)):
+                    for i in range(biblioteca.get_nro_libros()):
                         if libros[i] is not None:
                             print(libros[i])
-                        
-            elif opcion == 7:
-                break
-            elif opcion == 8:
-                Main.guardar_y_salir(biblioteca)
-                break
+                else:
+                    print("No hay libros registrados.")
+            
+            elif opcion == 6: # Listar lectores registrados
                 
-    def gestionar_libros(biblioteca):
+                lectores = biblioteca.get_lectores() # Retorna una lista
+                
+                if any(lector is not None for lector in lectores): # Verifica si la lista tiene al menos un elemento no None
+                    print("\nLos lectores registrados son:\n")
+                    for lector in lectores:
+                        if lector is not None:
+                            print(lector)
+                else:
+                    print("No hay lectores registrados.")
+            
+            elif opcion == 7: # Listar bibliotecarios registrados
+                
+                bibliotecarios = biblioteca.get_bibliotecarios()
+                
+                if any(bibliotecario is not None for bibliotecario in bibliotecarios):
+                    print("\nLos bibliotecarios registrados son:\n")
+                    for bibliotecario in bibliotecarios:
+                        if bibliotecario is not None:
+                            print(bibliotecario)
+                else:
+                    print("No hay bibliotecarios registrados.")
+                    
+            elif opcion == 8: # Listar autores registrados
+                
+                autores = biblioteca.get_autores()
+                
+                if any(autor is not None for autor in autores):
+                    print("\nLos autores registrados son:\n")
+                    for autor in autores:
+                        if autor is not None:
+                            print(autor)
+                else:
+                    print("No hay autores registrados.")
+                
+            elif opcion == 9: # Listar prestamos registrados
+                
+                prestamos = biblioteca.get_prestamos()
+                
+                if any(prestamo is not None for prestamo in prestamos):
+                    print("\nLos Préstamos registrados son:\n")
+                    for prestamo in prestamos:
+                        if prestamo is not None:
+                            print(prestamo)
+                else:
+                    print("No hay Préstamos registrados.")
+                    
+            elif opcion == 10: # Listar multas generadas
+                
+                multas = biblioteca.get_multas()
+                
+                if any(multa is not None for multa in multas):
+                    print("\nLas Multas generadas en la Biblioteca son: \n")
+                    for multa in multas:
+                        if multa is not None:
+                            print(multa)
+                else:
+                    print("No hay Multas registradas.")
+                    
+            elif opcion == 11: # Listar estantes
+                
+                estantes = biblioteca.get_estantes()
+                
+                if np.any(estantes is not None):
+                    for estante in estantes:
+                        if estante is not None:
+                            print(estante)
+                else:
+                    print("La biblioteca no tiene estantes.")
+
+            elif opcion == 12: # Cambiar nombre
+                
+                nombre_anterior = biblioteca.get_nombre()
+                nuevo_nombre = input("Ingrese el nuevo nombre de la Biblioteca: ")
+                biblioteca.set_nombre(nuevo_nombre)
+                print(f"Nombre cambiado exitosamente. Nombre anterior: '{nombre_anterior}'. Nuevo Nombre: '{nuevo_nombre}'")
+            
+            elif opcion == 13: # Volver al menu principal
+                break
+            
+            else:
+                print(f"Opción '{opcion}' no válida.")
+                
+    def gestionar_libros(biblioteca:Biblioteca):
         
         while True:
             
@@ -256,17 +373,15 @@ class Main:
                     biblioteca.listar_por_anio_publicacion(anio_publicacion)
                     
                 else:
-                    print("Opción inválida.")
+                    print(f"Opción {opcion} no válida. Por favor, intente nuevamente.")
                 
-            elif opcion == 8:
+            elif opcion == 8: # Volver al menu principal
                 break
-            elif opcion == 9:
-                Main.guardar_y_salir(biblioteca)
-                break
-            else:
-                print("Opción no válida.")
 
-    def gestionar_lectores(biblioteca):
+            else:
+                print(f"Opción {opcion} no válida. Por favor, intente nuevamente.")
+
+    def gestionar_lectores(biblioteca:Biblioteca):
         
         while True:
             
@@ -291,17 +406,105 @@ class Main:
             elif opcion == 3: # Buscar Lector
                 
                 identificacion = input("Ingrese la identificación del lector: ")
-                biblioteca.buscar_lector(identificacion)
+                lector = biblioteca.buscar_lector(identificacion)
+                
+                if lector is not None:
+                    print("\nLector encontrado: \n")
+                    print(lector)
+                else:
+                    print(f"\nLector '{identificacion}' no encontrado.\n")
 
-            elif opcion == 4: # Volver al menú principal
+            elif opcion == 4: # Listar Préstamos del lector
+                
+                identificacion_lector = input("Ingrese la identificación del lector: ")
+                lector = biblioteca.buscar_lector(identificacion_lector)
+                
+                if lector is not None:
+                    
+                    prestamos = lector.get_prestamos() # retorna una lista
+                    
+                    if any(prestamo is not None for prestamo in prestamos):
+                        print(f"\nPréstamos del lector {identificacion_lector}: \n")
+                        for prestamo in prestamos:
+                            if prestamo is not None:
+                                print(prestamo)
+                    else:
+                        print(f"\nEl lector '{identificacion_lector}' no tiene préstamos.\n")
+                else:
+                    print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+            
+            elif opcion == 5: # Listar Multas del lector
+                
+                identificacion_lector = input("Ingrese la identificación del lector: ")
+                lector = biblioteca.buscar_lector(identificacion_lector)
+                
+                if lector is not None:
+                
+                    multas = lector.get_multas() # retorna un ndarray
+                    
+                    # Verificar si hay al menos un objeto que no sea None
+                    if np.any(multas is not None): # Esto devuelve True si hay algún elemento no None
+                        print(f"\nMultas del lector {identificacion_lector}: \n")
+                        for multa in multas:
+                            if multa is not None:
+                                print(multa)
+                    else:
+                        print(f"\nEl lector '{identificacion_lector}' no tiene multas.\n")
+            
+            elif opcion == 6: # Listar Recibos del lector
+                
+                identificacion_lector = input("Ingrese la identificación del lector: ")
+                lector = biblioteca.buscar_lector(identificacion_lector)
+                
+                if lector is not None:
+                    
+                    recibos = lector.get_recibos()
+                    
+                    if any(recibo is not None for recibo in recibos):
+                        print(f"\nRecibos del lector {identificacion_lector}: \n")
+                        for recibo in recibos:
+                            if recibo is not None:
+                                print(recibo)
+                    else:
+                        print(f"\nEl lector '{identificacion_lector}' no tiene recibos.\n")
+                else:
+                    print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+            
+            elif opcion == 7: # Listar Préstamos Vigentes del Lector
+                
+                identificacion_lector = input("Ingrese la identificación del lector: ")
+                lector = biblioteca.buscar_lector(identificacion_lector)
+                
+                if lector is not None:
+                    prestamos_vigentes = lector.get_prestamos_vigentes()
+                    
+                    if np.any(prestamos is not None):
+                        print(f"\nPrestamos vigentes del lector {identificacion_lector}: \n")
+                        for prestamo in prestamos_vigentes:
+                            if prestamo is not None:
+                                print(prestamo)
+                    else:
+                        print(f"\nEl lector '{identificacion_lector}' no tiene prestamos vigentes.")
+                else:
+                    print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+            
+            elif opcion == 8: # Consultar nro de Multas
+                
+                identificacion_lector = input("Ingrese la identificación del lector: ")
+                lector = biblioteca.buscar_lector(identificacion_lector)
+                
+                if lector is not None:
+                    print(f"\nEl lector {identificacion_lector} tiene {lector.get_nro_multas()} multas.")
+                else:
+                    print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+                
+            elif opcion == 9: # Volver al menú principal
                 break
-            elif opcion == 5: # Guardar y salir
-                Main.guardar_y_salir(biblioteca)
-                break
+
             else:
-                print("Opción no válida. Por favor, seleccione una opción entre 1 y 5.")    
+                print(f"Opción {opcion} no válida. Por favor, intente nuevamente.")    
 
-    def gestionar_bibliotecarios(biblioteca):
+    def gestionar_bibliotecarios(biblioteca:Biblioteca):
         
         while True:
             
@@ -330,13 +533,11 @@ class Main:
                 
             elif opcion == 4: # Volver al menú principal
                 break
-            elif opcion == 5: # Guardar y salir
-                Main.guardar_y_salir(biblioteca)
-                break
-            else:
-                print("Opción no válida.")
 
-    def gestionar_autores(biblioteca):
+            else:
+                print(f"Opción {opcion} no válida. Por favor, intente nuevamente.")
+
+    def gestionar_autores(biblioteca:Biblioteca):
         
         while True:
             
@@ -368,84 +569,12 @@ class Main:
                 
             elif opcion == 4: # Volver al menu principal
                 break
-            elif opcion == 5: # Guardar y salir
-                Main.guardar_y_salir(biblioteca)
-                break
-            else:
-                print("Opción no válida.")
 
-    def gestionar_prestamos(biblioteca):
-        
-        while True:
-            
-            Main.mostrar_menu_prestamos()
-            opcion = int(input("Ingrese una opción (1-2) : "))
-            
-            if opcion == 1: # Buscar prestamo
-                
-                codigo_prestamo = input("ingrese el codigo del prestamo: ")
-                prestamo = biblioteca.buscar_prestamo(codigo_prestamo)
-                
-                if prestamo is not None:
-                    print(f"Prestamo encontrado: {prestamo}")
-                else:
-                    print(f"Prestamo {codigo_prestamo} no encontrado.")
-
-            elif opcion == 2: # Consultar multa
-                
-                codigo_prestamo = input("ingrese el codigo del prestamo:")
-                prestamo = biblioteca.buscar_prestamo(codigo_prestamo)
-                multa = prestamo.get_multa()
-                
-                if prestamo is not None:
-                    if multa is not None:
-                        print(f"Información de la Multa del Préstamo {codigo_prestamo}: {multa}")
-                    else:
-                        print(f"El Préstamo {codigo_prestamo} no tiene una multa asociada. ")
-                else:
-                    print(f"No se pudo comprobar la existencia de una Multa. Prestamo {codigo_prestamo} no encontrado.")
-
-            elif opcion == 3: # Volver al menu principal
-                break
-            
-            elif opcion == 4: # Guardar y salir
-                Main.guardar_y_salir(biblioteca)
-                break
-            
             else:
-                print("Opción no válida.")        
-
-    def buscar_multa(biblioteca):
-        
-        while True: 
-                
-            codigo_multa = input("Ingrese el código de la multa: ")
-            multa = biblioteca.buscar_multa(codigo_multa)
-            
-            if multa is not None:
-                print(multa)
-            else:
-                print(f"La multa {codigo_multa} no existe. ")
-                
-            break
-                
-    def buscar_recibo(biblioteca):
-        
-        while True:
-            
-            codigo_recibo = input("Ingrese el código del recibo: ")
-            recibo = biblioteca.buscar_recibo(codigo_recibo)
-            
-            if recibo is not None:
-                print(recibo)
-            else:
-                print(f"Recibo {codigo_recibo} no encontrado.")
-                
-            break
+                print(f"Opción {opcion} no válida. Por favor, intente nuevamente.")      
     
-    def guardar_y_salir(biblioteca):
+    def guardar_y_salir(biblioteca:Biblioteca):
         Main.guardar_biblioteca(biblioteca)
-        print("Biblioteca guardada exitosamente.")
         
 Main.run()
 
@@ -518,3 +647,5 @@ class Prueba:
 
 #Prueba.run()
 """
+
+
