@@ -10,7 +10,6 @@ class Autor(Persona):
         
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__fecha_fallecimiento = fecha_fallecimiento
-        self.__obras_literarias =  []
         
         if pais_origen in Autor.PAISES:
             self.__pais_origen = pais_origen

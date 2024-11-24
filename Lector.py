@@ -49,20 +49,27 @@ class Lector(Persona):
     
     def get_multas(self):
         return self.__multas
+
+    def get_recibos(self):
+        return self.__recibos
     
     def get_nro_multas(self):
         return self.__nro_multas
     
-    def get_recibos(self):
-        return self.__recibos
+    def get_nro_prestamos_vigentes(self):
+        return self.__nro_prestamos_vigentes
     
-    def get_codigo_multa_vigente(self):
+    def get_codigo_multas_vigentes(self):
         
-        multa = self.consultar_existencia_multa_vigente()
-        
-        if multa is not None:
-            codigo_multa = multa.get_codigo()
-            return codigo_multa
+        nro_multas_vigentes = self.consultar_nro_multas_vigentes() # retorna un int
+            
+        if nro_multas_vigentes > 0:
+            codigos_multas_vigentes = []
+            for i in range(self.__nro_multas):
+                if self.__multas[i] is not None:
+                    codigo = f"'{self.__multas[i].get_codigo()}'"
+                    codigos_multas_vigentes.append(codigo)
+            return codigos_multas_vigentes
         else:
             return f"No."
 
@@ -126,7 +133,7 @@ class Lector(Persona):
     
     # Otros metodos
     
-    def consultar_existencia_multas_vigentes(self):
+    def consultar_nro_multas_vigentes(self):
         
         nro_multas_vigentes = 0
         for multa in self.__multas:
@@ -136,7 +143,7 @@ class Lector(Persona):
 
     def verificar_requisitos_prestamo(self):
         self.resetear_multas()
-        nro_multas_vigentes = self.consultar_existencia_multas_vigentes()
+        nro_multas_vigentes = self.consultar_nro_multas_vigentes()
         if nro_multas_vigentes == 0:
             if self.__nro_multas < 3:
                 if self.__nro_prestamos_vigentes < 3:
@@ -190,5 +197,5 @@ Correo Electrónico: '{self.__email}'
 No. Préstamos: '{len(self.__prestamos)}'
 No. Préstamos Vigentes: '{self.__nro_prestamos_vigentes}'
 No. Multas: '{self.__nro_multas}'
-Multa Vigente: {print(self.get_codigo_multa_vigente())}
+Multa(s) Vigente(s): {print(self.get_codigo_multas_vigentes())}
 """

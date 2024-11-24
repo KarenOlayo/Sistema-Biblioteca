@@ -59,7 +59,7 @@ class Prestamo:
     def get_dias_duracion(self):
         return self.calcular_dias_duracion()
     
-    def get_estado_prestamo(self):
+    def get_estado(self):
         self.actualizar_estado()
         return self.__estado
     
