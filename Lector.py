@@ -47,10 +47,13 @@ class Lector(Persona):
     def get_prestamos(self):
         return self.__prestamos
     
+    def get_multas(self):
+        return self.__multas
+    
     def get_nro_multas(self):
         return self.__nro_multas
     
-    def get_recibos_lector(self):
+    def get_recibos(self):
         return self.__recibos
 
     # Metodos  Modificadores
@@ -65,6 +68,9 @@ class Lector(Persona):
         self.__nro_multas += 1
     
     # Metodos funcionales
+    
+    def aumentar_nro_multas(self):
+        self.__nro_multas += 1
     
     def guardar_multa(self, multa=object):
         if self.__nro_multas < 3:
@@ -91,6 +97,16 @@ class Lector(Persona):
             if multa is not None and multa.get_estado() == "Vigente":
                 return multa
         return None
+    
+    def get_codigo_multa_vigente(self):
+        
+        multa = self.consultar_existencia_multa_vigente()
+        
+        if multa is not None:
+            codigo_multa = multa.get_codigo()
+            return codigo_multa
+        else:
+            return f"No."
 
     def verificar_requisitos_prestamo(self):
         multa_vigente = self.consultar_existencia_multa_vigente()
@@ -98,18 +114,22 @@ class Lector(Persona):
             if self.__nro_multas < 3:
                 if self.__nro_prestamos_vigentes < 3:
                     return True
-        else:
-            return False
+        return False
     
     def verificar_requisitos_renovacion(self, codigo_prestamo):
+        
         cumple_requisitos = self.verificar_requisitos_prestamo() # Devuelve True o False
+        
         if cumple_requisitos is True:
             prestamo = self.buscar_prestamo(codigo_prestamo)
+            
             if prestamo is not None:
-                if prestamo.get_nro_renovaciones() < 2 :
-                    return True
-                else:
-                    return False
+                lector_del_prestamo = prestamo.get_lector().get_identificacion()
+                
+                if lector_del_prestamo == self.__identificacion:
+                    if prestamo.get_nro_renovaciones() < 2 :
+                        return True
+        return False
     
     def agregar_libro_a_prestamos_vigentes(self,libro:object):
         if self.__nro_prestamos_vigentes < 3:
@@ -144,4 +164,14 @@ class Lector(Persona):
     # Metodo de representacion
     
     def __repr__(self):
-        return f"('{self.__identificacion}','{self.get_apellido()}','{self.get_nombre()}')"
+        return f"""
+Identificación: '{self.__identificacion}'
+Apellido: '{self.get_apellido()}'
+Nombre: '{self.get_nombre()}'
+Fecha de Nacimiento: '{self.get_fecha_nacimiento()}'
+Correo Electrónico: '{self.__email}'
+No. Préstamos: '{len(self.__prestamos)}'
+No. Préstamos Vigentes: '{self.__nro_prestamos_vigentes}'
+No. Multas: '{self.__nro_multas}'
+Multa Vigente: {print(self.get_codigo_multa_vigente())}
+"""

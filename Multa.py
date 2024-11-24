@@ -42,8 +42,9 @@ class Multa:
     # metodo repr
     
     def __repr__(self):
-        return f"""Codigo Multa: {self.__codigo}
-Codigo Prestamo: {self.__prestamo.get_codigo()}
+        return f"""
+Código Multa: {self.__codigo}
+Código Prestamo: {self.__prestamo.get_codigo()}
 Identificación Lector: {self.__lector.get_identificacion()}
 Dias Penalización: {self.__dias_penalizacion}
 Fecha Inicio: {self.__fecha_inicio}

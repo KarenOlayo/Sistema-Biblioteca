@@ -35,4 +35,10 @@ class Bibliotecario(Persona):
     # Metodo de representacion
     
     def __repr__(self):
-        return f"('{self.__identificacion}, {self.get_apellido()}', '{self.get_nombre()}')"
+        return f"""
+Identificación: '{self.__identificacion}'
+Apellido: '{self.get_apellido()}'
+Nombre: '{self.get_nombre()}'
+Fecha de Nacimiento: '{self.get_fecha_nacimiento()}'
+Correo Electrónico: '{self.__email}'
+    """

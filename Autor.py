@@ -42,4 +42,10 @@ class Autor(Persona):
     # metodo de representacion
     
     def __repr__(self):
-        return f"{self.get_nombre()} {self.get_apellido()}'"
+        return f"""
+Apellido: '{self.get_apellido()}'
+Nombre: '{self.get_nombre()}'
+Fecha de Nacimiento: '{self.get_fecha_nacimiento()}'
+Fecha de Fallecimiento: '{self.__fecha_fallecimiento}'
+País de Origen: '{self.__pais_origen}'
+    """
