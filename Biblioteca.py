@@ -239,11 +239,11 @@ class Biblioteca:
                     self.__libros[self.__nro_libros] = libro 
                     self.__nro_libros += 1 
                     self.agregar_libro_estante(area_del_conocimiento, libro)
-                    print("Libro agregado exitosamente. ")
+                    return f"Libro '{titulo}' '{codigo_isbn}' agregado exitosamente."
             else:
-                print("No se pudo agregar el libro. El autor no está registrado.")
+                return f"No se pudo agregar el libro '{titulo}' '{codigo_isbn}'. El autor {autor} no está registrado"
         else:
-            print("No se pudo agregar el libro. El libro ya está registrado.")
+            return f"No se pudo agregar el libro. '{titulo}' '{codigo_isbn}' ya está registrado"
             
     def eliminar_libro(self, titulo, codigo_isbn):
             
@@ -292,13 +292,13 @@ class Biblioteca:
                         return prestamo, recibo
                         
                     else:
-                        print(f"El libro '{titulo}' con ISBN '{codigo_isbn}' no está disponible.")
+                        return f"El libro '{titulo}' con ISBN '{codigo_isbn}' no está disponible."
                 else:
-                    print(f"No se puede realizar el préstamo. Libro {titulo} no encontrado.")
+                    return f"No se puede realizar el préstamo. Libro {titulo} no encontrado."
             else:
-                print(f"No se puede realizar el préstamo. Lector {identificacion_lector} no cumple con los requisitos para el préstamo.")
+                return f"No se puede realizar el préstamo. Lector {identificacion_lector} no cumple con los requisitos para el préstamo."
         else:
-            print(f"No se puede realizar el préstamo. Lector {identificacion_lector} no encontrado.")
+            return f"No se puede realizar el préstamo. Lector {identificacion_lector} no encontrado."
     
     def renovar_prestamo(self, codigo_prestamo, identificacion_lector):
         
@@ -327,13 +327,13 @@ class Biblioteca:
                         return recibo 
                     
                     else:
-                        print(f"El lector {identificacion_lector} no cumple con los requisitos para renovar el préstamo {codigo_prestamo}")
+                        return f"El lector {identificacion_lector} no cumple con los requisitos para renovar el préstamo {codigo_prestamo}"
                 else:
-                    print(f"El lector {identificacion_lector} no está registrado o la identificación es incorrecta.")
+                    return f"El lector {identificacion_lector} no está registrado o la identificación es incorrecta."
             else:
-                print("No se pudo realizar la renovación. El préstamo está atrasado o ya terminó.")
+                return "No se pudo realizar la renovación. El préstamo está atrasado o ya terminó."
         else:        
-            print(f"El préstamo {codigo_prestamo} no existe. No se pudo renovar el préstamo.")
+            return f"El préstamo {codigo_prestamo} no existe. No se pudo renovar el préstamo."
     
     def recibir_libro_devuelto(self, codigo_prestamo, identificacion_lector, fecha_entrega):
         
@@ -377,15 +377,15 @@ class Biblioteca:
                             return recibo_devolucion
                             
                         else:
-                            print("El libro del préstamo no es válido.")
+                            return f"El libro del préstamo no es válido."
                     else:
-                        print(f"El lector {identificacion_lector} no corresponde con el lector del préstamo {codigo_prestamo}")
+                        return f"El lector {identificacion_lector} no corresponde con el lector del préstamo {codigo_prestamo}"
                 else:
-                    print("La fecha de entrega es anterior a la fecha de préstamo.")
+                    return f"La fecha de entrega es anterior a la fecha de préstamo."
             else:
-                print(f"El lector con identificación {identificacion_lector} no existe")
+                return f"El lector con identificación {identificacion_lector} no existe"
         else:
-            print(f"El préstamo {codigo_prestamo} no existe")
+            return f"El préstamo {codigo_prestamo} no existe"
     
     # Metodos para los prestamos
     
@@ -484,10 +484,15 @@ class Biblioteca:
                 self.__recibos.append(recibo)
                 return True
         else:
-            print("No se generó un recibo.")
-            return False
+            return "No se generó un recibo. No se guardó en la Biblioteca."
 
     def generar_recibo(self, objeto=object, lector=Lector):
+        
+        """
+        Genera un recibo a partir de una instancia de Multa o Prestamo.
+        Si el objeto es prestamo, genera un recibo en función del estado del mismo y retorna un objeto recibo.
+        Si el objeto es una Multa, genera un recibo con la información relacionada a la misma y retorna el objeto.
+        """
         
         nombre_biblioteca = self.__nombre
         codigo_recibo = f"R{self.__nro_recibos_biblioteca+1}"
@@ -513,6 +518,8 @@ Fecha Devolución: {objeto.get_fecha_devolucion()}"""
                     if recibo is not None:
                         self.__nro_recibos_biblioteca += 1
                         return recibo
+                    else:
+                        return "No se generó el recibo."
                 
                 elif estado_prestamo == "Renovado": # Corresponde a la renovacion del prestamo de un libro
                 
@@ -530,6 +537,8 @@ Nueva Fecha Devolución: {objeto.get_fecha_devolucion()}"""
                     if recibo is not None:
                         self.__nro_recibos_biblioteca += 1
                         return recibo
+                    else:
+                        return "No se generó el recibo."
 
                 else: # Estado == 'Terminado' corresponde a la devolucion de un prestamo
                         
@@ -549,7 +558,9 @@ Multa: {objeto.comprobar_existencia_multa()}"""
                     
                     if recibo is not None:
                         self.__nro_recibos_biblioteca += 1
-                        return recibo       
+                        return recibo
+                    else:
+                        return "No se generó el recibo."       
                 
         elif isinstance(objeto, Multa):
 
@@ -561,17 +572,14 @@ Fecha Inicio: {objeto.get_fecha_inicio()}
 Fecha Fin: {objeto.get_fecha_fin()}"""
 
             recibo = Recibo(nombre_biblioteca, codigo_recibo, "Multa", fecha_recibo, lector, informacion)
-                                
+                            
             if recibo is not None:
                 self.__nro_recibos_biblioteca += 1
                 return recibo
-                
             else:
-                print("El estado del prestamo es 'Atrasado'.")
-                return None
-        else: # si el objeto no es un prestamo o multa
-            print("El objeto no es un prestamo o multa.")
-            return None
+                return "No se generó el recibo."
+        else: 
+            return "El objeto no es una instancia de Préstamo o Multa."
 
     # Metodos para listar
     
@@ -584,7 +592,7 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
             self.get_libros_prestados()
         
         else:
-            print(f"Estado '{estado}' no válido.")
+            return f"Estado '{estado}' no válido."
     
     def listar_por_autor(self, nombre, apellido):
         

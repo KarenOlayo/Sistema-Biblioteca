@@ -15,11 +15,14 @@ class Prestamo:
         self.__dias_duracion = None
         self.calcular_dias_duracion()
         self.__estado = estado if estado in ESTADO_PRESTAMO else 'Vigente'
-        self.actualizar_estado()
         self.__multa = None
         self.__nro_renovaciones = 0
 
     def actualizar_estado(self):
+        
+        # Por defecto, es tado de un prestamo es "Vigente"
+        # El estado "Terminado" se actualiza cuando se devuelve el libro
+        # El estado "Renovado" se actualiza cuando se renueva el prestamo de un libro
         
         hoy = datetime.today().date()
         
