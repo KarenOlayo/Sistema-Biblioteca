@@ -306,7 +306,7 @@ class Biblioteca:
         prestamo = self.buscar_prestamo(codigo_prestamo)
         
         if prestamo is not None:
-            estado_prestamo = prestamo.get_estado_prestamo()
+            estado_prestamo = prestamo.get_estado()
             
             if estado_prestamo == "Vigente":
                 
@@ -500,7 +500,7 @@ class Biblioteca:
                     
         if isinstance(objeto, Prestamo):
             
-            estado_prestamo = objeto.get_estado_prestamo()
+            estado_prestamo = objeto.get_estado()
             
             if estado_prestamo != "Atrasado":
             
@@ -509,7 +509,7 @@ class Biblioteca:
                     informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
 Titulo Libro: '{objeto.get_libro().get_titulo()}'
 Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
-Estado Préstamo: {objeto.get_estado_prestamo()}
+Estado Préstamo: {objeto.get_estado()}
 Fecha Préstamo: {objeto.get_fecha_prestamo()}
 Fecha Devolución: {objeto.get_fecha_devolucion()}"""
 
@@ -526,7 +526,7 @@ Fecha Devolución: {objeto.get_fecha_devolucion()}"""
                     informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
 Titulo Libro: '{objeto.get_libro().get_titulo()}'
 Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
-Estado Préstamo: {objeto.get_estado_prestamo()}
+Estado Préstamo: {objeto.get_estado()}
 No. Renovación: {objeto.get_nro_renovaciones()}
 Fecha Préstamo: {objeto.get_fecha_prestamo()}
 Fecha Devolución Inicial: {objeto.get_fecha_prestamo()+timedelta(days=30)}
@@ -545,7 +545,7 @@ Nueva Fecha Devolución: {objeto.get_fecha_devolucion()}"""
                     informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
 Titulo Libro: '{objeto.get_libro().get_titulo()}'
 Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
-Estado Préstamo: {objeto.get_estado_prestamo()}
+Estado Préstamo: {objeto.get_estado()}
 No. Renovaciones Préstamo: {objeto.get_nro_renovaciones()}
 Fecha Préstamo: {objeto.get_fecha_prestamo()}
 Fecha Devolución: {objeto.get_fecha_devolucion()}
@@ -586,10 +586,10 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
     def listar_por_estado(self, estado):
         
         if estado == "Disponible" :
-            self.get_libros_disponibles()
+            return self.get_libros_disponibles()
             
         elif estado == "Prestado" :
-            self.get_libros_prestados()
+            return self.get_libros_prestados()
         
         else:
             return f"Estado '{estado}' no válido."

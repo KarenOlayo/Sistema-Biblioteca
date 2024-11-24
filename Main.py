@@ -101,7 +101,6 @@ class Main:
     6. Buscar Libro.
     7. Listar Libros.
     8. Volver al Menú Principal.
-    9. Guardar y Salir. \n
     """)
 
     def mostrar_menu_lectores():
@@ -114,7 +113,8 @@ class Main:
 6. Listar Recibos.
 7. Listar Préstamos Vigentes.
 8. Consultar Número de Multas.
-9. Volver al Menú Principal.
+9. Consultar Número de Préstamos Vigentes.
+10. Volver al Menú Principal.
     """)
 
     def mostrar_menu_bibliotecarios():
@@ -133,7 +133,7 @@ class Main:
 4. Volver al Menú Principal.
 """)
         
-    def mostrar_opciones_listar_libros(biblioteca:Biblioteca):
+    def mostrar_opciones_listar_libros():
         print("""\nLas opciones de listar son:\n
 1. Listar Libros por Estado.
 2. Listar Libros por Autor.
@@ -197,11 +197,18 @@ class Main:
                 
                 libros = biblioteca.get_libros() # Retorna una ndarray
                 
-                if np.any(libros is not None): # Verifica si el ndarray tiene al menos un elemento no Noneany
+                if np.any(libros is not None): # Verifica si el ndarray tiene al menos un elemento no None
                     print("\nLos Libros registrados son:\n")
                     for i in range(biblioteca.get_nro_libros()):
                         if libros[i] is not None:
-                            print(libros[i])
+                            
+                            titulo = libros[i].get_titulo()
+                            codigo_isbn = libros[i].get_codigo_isbn()
+                            autor = libros[i].get_autor()
+                            area_del_conocimiento = libros[i].get_area_del_conocimiento()
+                            
+                            formato = f"< Titulo: '{titulo}' | ISBN: '{codigo_isbn}' | Autor: {autor} | Área: {area_del_conocimiento} >"
+                            print(formato)
                 else:
                     print("No hay libros registrados.")
             
@@ -209,11 +216,20 @@ class Main:
                 
                 lectores = biblioteca.get_lectores() # Retorna una lista
                 
-                if any(lector is not None for lector in lectores): # Verifica si la lista tiene al menos un elemento no None
+                lectores_validos = [lector for lector in lectores if lector is not None]
+                
+                if len(lectores_validos) > 0: # Verifica si la lista tiene al menos un elemento
                     print("\nLos lectores registrados son:\n")
-                    for lector in lectores:
-                        if lector is not None:
-                            print(lector)
+                    for lector in lectores_validos:
+                        
+                        identificacion = lector.get_identificacion()
+                        apellido = lector.get_apellido()
+                        nombre = lector.get_nombre()
+                        fecha_nacimiento = lector.get_fecha_nacimiento()
+                        
+                        formato = f"< Identificación: '{identificacion}' | Apellido: '{apellido}' | Nombre: '{nombre}' | Fecha de Nacimiento: '{fecha_nacimiento}' >"
+                        
+                        print(formato)
                 else:
                     print("No hay lectores registrados.")
             
@@ -221,11 +237,21 @@ class Main:
                 
                 bibliotecarios = biblioteca.get_bibliotecarios()
                 
-                if any(bibliotecario is not None for bibliotecario in bibliotecarios):
+                bibliotecarios_validos = [bibliotecario for bibliotecario in bibliotecarios if bibliotecario is not None]
+                
+                if len(bibliotecarios_validos) > 0:
                     print("\nLos bibliotecarios registrados son:\n")
-                    for bibliotecario in bibliotecarios:
-                        if bibliotecario is not None:
-                            print(bibliotecario)
+                    for bibliotecario in bibliotecarios_validos:
+                        
+                        identificacion = bibliotecario.get_identificacion()
+                        apellido = bibliotecario.get_apellido()
+                        nombre = bibliotecario.get_nombre()
+                        fecha_nacimiento = bibliotecario.get_fecha_nacimiento()
+                        
+                        formato = f"< Identificación: '{identificacion}' | Apellido: '{apellido}' | Nombre: '{nombre}' | Fecha de Nacimiento: '{fecha_nacimiento}' >"
+                        
+                        print(formato)
+                        
                 else:
                     print("No hay bibliotecarios registrados.")
                     
@@ -233,11 +259,20 @@ class Main:
                 
                 autores = biblioteca.get_autores()
                 
-                if any(autor is not None for autor in autores):
+                autores_validos = [autor for autor in autores if autor is not None]
+                
+                if len(autores_validos) > 0:
                     print("\nLos autores registrados son:\n")
-                    for autor in autores:
-                        if autor is not None:
-                            print(autor)
+                    for autor in autores_validos:
+                        
+                        apellido = autor.get_apellido()
+                        nombre = autor.get_nombre()
+                        pais_origen = autor.get_pais_origen()
+                        
+                        formato = f"< Apellido: '{apellido}' | Nombre: '{nombre}' | Pais de Origen: '{pais_origen}' >"
+                        
+                        print(formato)
+                        
                 else:
                     print("No hay autores registrados.")
                 
@@ -245,11 +280,22 @@ class Main:
                 
                 prestamos = biblioteca.get_prestamos()
                 
-                if any(prestamo is not None for prestamo in prestamos):
+                prestamos_validos = [prestamo for prestamo in prestamos if prestamo is not None]
+                
+                if len(prestamos_validos):
                     print("\nLos Préstamos registrados son:\n")
-                    for prestamo in prestamos:
-                        if prestamo is not None:
-                            print(prestamo)
+                    for prestamo in prestamos_validos:
+                        
+                        codigo = prestamo.get_codigo()
+                        identificacion_lector = prestamo.get_lector().get_identificacion()
+                        titulo_libro = prestamo.get_libro().get_titulo()
+                        codigo_isbn = prestamo.get_libro().get_codigo_isbn()
+                        fecha_prestamo = prestamo.get_fecha_prestamo()
+                        fecha_devolucion = prestamo.get_fecha_devolucion()
+                        estado = prestamo.get_estado()
+                        
+                        formato = f"<Código: {codigo} | Lector: {identificacion_lector} | Libro: {titulo_libro}-{codigo_isbn} | Inicio: {fecha_prestamo} | Devolución: {fecha_devolucion} | Estado: {estado}>"
+                        print(formato)
                 else:
                     print("No hay Préstamos registrados.")
                     
@@ -257,11 +303,23 @@ class Main:
                 
                 multas = biblioteca.get_multas()
                 
-                if any(multa is not None for multa in multas):
+                multas_validas = [multa for multa in multas if multa is not None]
+                
+                if len(multas_validas) > 0:
                     print("\nLas Multas generadas en la Biblioteca son: \n")
                     for multa in multas:
-                        if multa is not None:
-                            print(multa)
+                        
+                        codigo = multa.get_codigo()
+                        codigo_prestamo = multa.get_prestamo().get_codigo()
+                        identificacion_lector = multa.get_lector().get_identificacion()
+                        fecha_inicio = multa.get_fecha_inicio()
+                        fecha_fin = multa.get_fecha_fin()
+                        dias_penalizacion = multa.get_dias_penalizacion()
+                        estado = multa.get_estado()
+                        
+                        formato = f"< Código: {codigo} | Préstamo: {codigo_prestamo} | Lector: {identificacion_lector} | Inicio: {fecha_inicio} | Fin: {fecha_fin} | Penalización: {dias_penalizacion} dias. | Estado: {estado} >"
+                        
+                        print(formato)
                 else:
                     print("No hay Multas registradas.")
                     
@@ -294,7 +352,7 @@ class Main:
         while True:
             
             Main.mostrar_menu_libros()
-            opcion = int(input("Ingrese una opción (1-9): "))
+            opcion = int(input("Ingrese una opción: "))
             
             if opcion == 1: # Agregar Libro
                 
@@ -411,27 +469,70 @@ class Main:
                 Main.mostrar_opciones_listar_libros()
                 opcion_listar = int(input("Ingrese la opción para listar: "))
                 
+                def listar(lista):
+                    
+                    for libro in lista:
+                        
+                        titulo = libro.get_titulo()
+                        codigo_isbn = libro.get_codigo_isbn()
+                        autor = libro.get_autor()
+                        area = libro.get_area_del_conocimiento()
+                        genero = libro.get_genero()
+                        estado = libro.get_estado()
+                        
+                        formato = f"< Titulo: {titulo} | ISBN: {codigo_isbn} | Autor: {autor} | Área: {area} | Género: {genero} | Estado: {estado} >"
+                        
+                        print(formato)
+                
                 if opcion_listar == 1: # Listar por Estado
                     estado = input("Ingrese el estado del libro con el que desea listar: ")
-                    lista = biblioteca.listar_por_estado(estado) # devuelve una lista 
+                    lista_libros = biblioteca.listar_por_estado(estado) # devuelve una lista 
+                    
+                    if len(lista_libros) >= 1:
+                        listar(lista_libros)
+                    else:
+                        print(f"No hay libros con el estado '{estado}'.")
                 
                 elif opcion_listar == 2: # Listar por Autor
                     
                     nombre = input("Ingrese el nombre del autor: ")
                     apellido = input("Ingrese el apellido del autor: ")
-                    biblioteca.listar_por_autor(nombre, apellido)
+                    lista_libros = biblioteca.listar_por_autor(nombre, apellido)
+                    
+                    if len(lista_libros) >= 1:
+                        listar(lista_libros)
+                    else:
+                        print(f"No hay libros registrados para el autor autor '{nombre} {apellido}'.")
                 
                 elif opcion_listar == 3: # Listar por area del conocimiento
+                    
                     area_del_conocimiento = input("Ingrese el área del conocimiento: ")
-                    biblioteca.listar_por_area_del_conocimiento(area_del_conocimiento)
+                    lista_libros = biblioteca.listar_por_area_del_conocimiento(area_del_conocimiento)
                 
+                    if len(lista_libros) >= 1:
+                        listar(lista_libros)
+                    else:
+                        print(f"No hay libros registrados cuya área del conocimiento sea '{area_del_conocimiento}'.")
+                    
                 elif opcion_listar == 4: # Listar por genero
+                    
                     genero = input("Ingrese el género: ")
-                    biblioteca.listar_por_genero(genero)
+                    lista_libros = biblioteca.listar_por_genero(genero)
+                    
+                    if len(lista_libros) >= 1:
+                        listar(lista_libros)
+                    else:
+                        print(f"No hay libros registrados cuyo género sea '{genero}'.")
                 
                 elif opcion_listar == 5: # Listar por año de publicacion
+                    
                     anio_publicacion = input("Ingrese el año de publicación: ")
-                    biblioteca.listar_por_anio_publicacion(anio_publicacion)
+                    lista_libros = biblioteca.listar_por_anio_publicacion(anio_publicacion)
+                    
+                    if len(lista_libros) >= 1:
+                        listar(lista_libros)
+                    else:
+                        print(f"No hay libros registrados para el año de publicación '{anio_publicacion}'.")
                     
                 else:
                     print(f"Opción {opcion} no válida. Por favor, intente nuevamente.")
@@ -447,7 +548,7 @@ class Main:
         while True:
             
             Main.mostrar_menu_lectores()
-            opcion = int(input("Ingrese una opción (1-5): "))
+            opcion = int(input("Ingrese una opción: "))
             
             if opcion == 1: # Agregar Lector
                 
@@ -457,12 +558,18 @@ class Main:
                 fecha_nacimiento = input("Ingrese la fecha de nacimiento del lector en el formato DD/MM/Y: ")
                 email = input("Ingrese el correo electrónico del lector: ")
                 
-                biblioteca.agregar_lector(nombre, apellido, fecha_nacimiento, identificacion, email)
+                if biblioteca.agregar_lector(nombre, apellido, fecha_nacimiento, identificacion, email) == True:
+                    print(f"Lector con identificación {identificacion} agregagdo exitosamente.")
+                else:
+                    print(f"El lector con identificación {identificacion} ya está registrado.")
                 
             elif opcion == 2: # Eliminar Lector
                 
                 identificacion= input("Ingrese la identificación del lector: ")
-                biblioteca.eliminar_lector(identificacion)
+                if biblioteca.eliminar_lector(identificacion) == True:
+                    print(f"Lector con identificación {identificacion} eliminado exitosamente.")
+                else:
+                    print(f"No se pudo eliminar al lector con identificación {identificacion}. No está registrado en el sistema. ")
 
             elif opcion == 3: # Buscar Lector
                 
@@ -473,7 +580,7 @@ class Main:
                     print("\nLector encontrado: \n")
                     print(lector)
                 else:
-                    print(f"\nLector '{identificacion}' no encontrado.\n")
+                    print(f"\nLector con identificación '{identificacion}' no encontrado.\n")
 
             elif opcion == 4: # Listar Préstamos del lector
                 
@@ -483,16 +590,16 @@ class Main:
                 if lector is not None:
                     
                     prestamos = lector.get_prestamos() # retorna una lista
+                    prestamos_validos = [prestamo for prestamo in prestamos if prestamo is not None]
                     
-                    if any(prestamo is not None for prestamo in prestamos):
-                        print(f"\nPréstamos del lector {identificacion_lector}: \n")
+                    if len(prestamos_validos) > 0:
+                        print(f"\nPréstamos del lector con identificación {identificacion_lector}: \n")
                         for prestamo in prestamos:
-                            if prestamo is not None:
-                                print(prestamo)
+                            print(prestamo)
                     else:
-                        print(f"\nEl lector '{identificacion_lector}' no tiene préstamos.\n")
+                        print(f"\nEl lector '{identificacion_lector}' no ha realizado préstamos.\n")
                 else:
-                    print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+                    print(f"\nLector con identificación '{identificacion_lector}' no encontrado.\n")
             
             elif opcion == 5: # Listar Multas del lector
                 
@@ -558,8 +665,18 @@ class Main:
                     print(f"\nEl lector {identificacion_lector} tiene {lector.get_nro_multas()} multas.")
                 else:
                     print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+            
+            elif opcion == 9: # Consultar nro Prestamos vigentes
                 
-            elif opcion == 9: # Volver al menú principal
+                identificacion_lector = input("Ingrese la identificación del lector: ")
+                lector = biblioteca.buscar_lector(identificacion_lector)
+                
+                if lector is not None:
+                    print(f"\nEl lector {identificacion_lector} tiene {lector.get_nro_prestamos_vigentes()} prestamos vigentes.")
+                else:
+                    print(f"\nLector '{identificacion_lector}' no encontrado.\n")
+                
+            elif opcion == 10: # Volver al menú principal
                 break
 
             else:
@@ -570,7 +687,7 @@ class Main:
         while True:
             
             Main.mostrar_menu_bibliotecarios()
-            opcion = int(input("Ingrese una opción (1-5): "))
+            opcion = int(input("Ingrese una opción: "))
             
             if opcion == 1: # Agregar Bibliotecario
                 
@@ -580,17 +697,29 @@ class Main:
                 identificacion= input("Ingrese la identificación del bibliotecario: ")
                 email= input("Ingrese el email del bibliotecario: ")  
                 
-                biblioteca.agregar_bibliotecario(nombre, apellido, fecha_nacimiento, identificacion, email)
+                if biblioteca.agregar_bibliotecario(nombre, apellido, fecha_nacimiento, identificacion, email) == True:
+                    print(f"Bibliotecario con identificación {identificacion} registrado exitosamente.")
+                else:
+                    print(f"El Bibliotecario con identificación {identificacion} ya está registrado.")
                 
             elif opcion == 2: # Eliminar Bibliotecario
                 
                 identificacion= input("Ingrese la identificación del bibliotecario: ")
-                biblioteca.eliminar_bibliotecario(identificacion)
+                if biblioteca.eliminar_bibliotecario(identificacion) == True:
+                    print(f"Bibliotecario con identificación {identificacion} eliminado exitosamente.")
+                else:
+                    print(f"No se pudo eliminar al Bibliotecario con identificación {identificacion}. No está registrado en el sistema.")
 
             elif opcion == 3: # Buscar Bibliotecario
                 
-                identificacion= input("Ingrese la identificación del bibliotecario: ")
-                biblioteca.buscar_bibliotecario(identificacion)
+                identificacion = input("Ingrese la identificación del bibliotecario: ")
+                bibliotecario = biblioteca.buscar_lector(identificacion)
+                
+                if bibliotecario is not None:
+                    print("\nBibliotecario encontrado: \n")
+                    print(bibliotecario)
+                else:
+                    print(f"\nBibliotecario con identificación '{identificacion}' no encontrado.\n")
                 
             elif opcion == 4: # Volver al menú principal
                 break
@@ -603,7 +732,7 @@ class Main:
         while True:
             
             Main.mostrar_menu_autores()
-            opcion = int(input("Ingrese una opción (1-5): "))
+            opcion = int(input("Ingrese una opción: "))
             
             if opcion == 1: # Agregar Autor
                 
@@ -612,21 +741,34 @@ class Main:
                 fecha_nacimiento = input("Ingrese la fecha de nacimiento del autor (DD/MM/Y): ")
                 fecha_fallecimiento = input("Ingrese la fecha de fallecimiento del autor (DD/MM/Y): ")
                 pais_origen = input("Ingrese el pais de origen del autor: ")
-                biblioteca.agregar_autor(nombre,apellido,fecha_nacimiento,fecha_fallecimiento,pais_origen)
+                
+                if biblioteca.agregar_autor(nombre,apellido,fecha_nacimiento,fecha_fallecimiento,pais_origen) == True:
+                    print(f"Autor '{nombre} {apellido}' agregado exitosamente.")
+                else:
+                    print(f"El autor '{nombre} {apellido}' ya está registrado en el sistema.")
                 
             elif opcion == 2: # Eliminar autor
                 
                 nombre= input("Ingrese el nombre del autor: ")
                 apellido=input("Ingrese el apellido del autor: ")
                 
-                biblioteca.eliminar_autor(nombre,apellido)
+                if biblioteca.eliminar_autor(nombre,apellido) == True:
+                    print(f"Autor '{nombre} {apellido}' eliminado exitosamente.")
+                else:
+                    print(f"El autor '{nombre} {apellido}' no está registrado. No se pudo eliminar.")
     
             elif opcion == 3: # Buscar autor
                 
                 nombre= input("Ingrese el nombre del autor: ")
                 apellido=input("Ingrese el apellido del autor: ")
                 
-                biblioteca.buscar_autor(nombre,apellido)
+                autor = biblioteca.buscar_autor(nombre,apellido)
+                
+                if autor is not None:
+                    print("\nAutor encontrado: \n")
+                    print(autor)
+                else:
+                    print(f"Autor '{nombre} {apellido}' no encontrado.")
                 
             elif opcion == 4: # Volver al menu principal
                 break
@@ -638,7 +780,6 @@ class Main:
         Main.guardar_biblioteca(biblioteca)
         
 Main.run()
-
 
 """
 class Prueba:
@@ -708,5 +849,3 @@ class Prueba:
 
 #Prueba.run()
 """
-
-
