@@ -13,7 +13,6 @@ class Multa:
         self.__fecha_inicio = fecha_inicio
         self.__fecha_fin = fecha_fin
         self.__estado = estado
-        self.actualizar_estado()
 
     # Metodos Accesores 
     
@@ -36,8 +35,18 @@ class Multa:
         return self.__fecha_fin
     
     def get_estado(self):
+        self.actualizar_estado()
         return self.__estado
 
+    # Metodos modificadores
+    
+    def set_estado(self, nuevo_estado):
+        self.__estado = nuevo_estado
+    
+    def actualizar_estado(self):
+        hoy = datetime.today().date()
+        if hoy > self.__fecha_fin:
+            self.set_estado("Terminado")
     
     # metodo repr
     
@@ -51,8 +60,4 @@ Fecha Inicio: {self.__fecha_inicio}
 Fecha Fin: {self.__fecha_fin}
 Estado Multa: {self.__estado}"""
     
-    # metodo funcional
-    
-    def actualizar_estado(self):
-        pass
     

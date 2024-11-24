@@ -55,48 +55,6 @@ class Lector(Persona):
     
     def get_recibos(self):
         return self.__recibos
-
-    # Metodos  Modificadores
-
-    def set_identificacion(self, nueva_identificacion):
-        self.__identificacion = nueva_identificacion
-
-    def  set_email(self, nuevo_email):
-        self.__email = nuevo_email
-    
-    def set_nro_multas(self):
-        self.__nro_multas += 1
-    
-    # Metodos funcionales
-    
-    def aumentar_nro_multas(self):
-        self.__nro_multas += 1
-    
-    def guardar_multa(self, multa=object):
-        if self.__nro_multas < 3:
-            if multa is not None:
-                self.__multas[self.__nro_multas] = multa
-                self.__nro_multas += 1
-    
-    def buscar_prestamo(self, codigo_prestamo):
-        for prestamo in self.__prestamos :
-            if prestamo.get_codigo() == codigo_prestamo:
-                return prestamo # retorna un objeto
-            else:
-                return None
-    
-    def buscar_recibo(self, codigo_recibo):
-        for recibo in self.__recibos:
-            if recibo.get_codigo() == codigo_recibo:
-                return recibo # retorna un objeto
-            else:
-                return None
-    
-    def consultar_existencia_multa_vigente(self):
-        for multa in self.__multas:
-            if multa is not None and multa.get_estado() == "Vigente":
-                return multa
-        return None
     
     def get_codigo_multa_vigente(self):
         
@@ -108,9 +66,78 @@ class Lector(Persona):
         else:
             return f"No."
 
+    # Metodos  Modificadores
+
+    def set_identificacion(self, nueva_identificacion):
+        self.__identificacion = nueva_identificacion
+
+    def  set_email(self, nuevo_email):
+        self.__email = nuevo_email
+    
+    def aumentar_nro_multas(self):
+        self.__nro_multas += 1
+        
+    # Metodos de búsqueda
+    
+    def buscar_prestamo(self, codigo_prestamo):
+        for prestamo in self.__prestamos :
+            if prestamo.get_codigo() == codigo_prestamo:
+                return prestamo # retorna un objeto
+        return None
+    
+    def buscar_multa(self, codigo_multa):
+        
+        for i in range(self.__nro_multas):
+            if self.__multas[i] is not None and self.__multas[i].get_codigo() == codigo_multa:
+                return i
+        return -1
+    
+    def buscar_recibo(self, codigo_recibo):
+        for recibo in self.__recibos:
+            if recibo.get_codigo() == codigo_recibo:
+                return recibo # retorna un objeto
+        return None
+    
+    # Metodos para agregar y guaradr
+    
+    def agregar_libro_a_prestamos_vigentes(self,libro:object):
+        if self.__nro_prestamos_vigentes < 3:
+            self.__prestamos_vigentes[self.__nro_prestamos_vigentes] = libro
+            self.__nro_prestamos_vigentes += 1
+    
+    def guardar_multa(self, multa:object):
+        if self.__nro_multas < 3:
+            if multa is not None:
+                self.__multas[self.__nro_multas] = multa
+                self.__nro_multas += 1
+    
+    def guardar_recibo(self, recibo:object):
+        if recibo is not None:
+            codigo_recibo = recibo.get_codigo()
+            if self.buscar_recibo(codigo_recibo) is None:
+                self.__recibos.append(recibo)
+        else:
+            print("No se generó un recibo. No se pudo guardar en la lista del lector.")
+    
+    def guardar_prestamo(self, prestamo:object):
+        codigo_prestamo = prestamo.get_codigo()
+        if self.buscar_prestamo(codigo_prestamo) is None:
+            self.__prestamos.append(prestamo)
+    
+    # Otros metodos
+    
+    def consultar_existencia_multas_vigentes(self):
+        
+        nro_multas_vigentes = 0
+        for multa in self.__multas:
+            if multa is not None and multa.get_estado() == "Vigente":
+                nro_multas_vigentes +=1
+        return nro_multas_vigentes
+
     def verificar_requisitos_prestamo(self):
-        multa_vigente = self.consultar_existencia_multa_vigente()
-        if multa_vigente is None:
+        self.resetear_multas()
+        nro_multas_vigentes = self.consultar_existencia_multas_vigentes()
+        if nro_multas_vigentes == 0:
             if self.__nro_multas < 3:
                 if self.__nro_prestamos_vigentes < 3:
                     return True
@@ -130,11 +157,6 @@ class Lector(Persona):
                     if prestamo.get_nro_renovaciones() < 2 :
                         return True
         return False
-    
-    def agregar_libro_a_prestamos_vigentes(self,libro:object):
-        if self.__nro_prestamos_vigentes < 3:
-            self.__prestamos_vigentes[self.__nro_prestamos_vigentes] = libro
-            self.__nro_prestamos_vigentes += 1
 
     def eliminar_libro_de_prestamos_vigentes(self, libro:object):
         titulo = libro.get_titulo()
@@ -147,19 +169,14 @@ class Lector(Persona):
                     self.__prestamos_vigentes[j] = self.__prestamos_vigentes[j+1]
                 self.__prestamos_vigentes[self.__nro_prestamos_vigentes-1] = None
                 self.__nro_prestamos_vigentes -= 1
-
-    def guardar_recibo(self, recibo:object):
-        if recibo is not None:
-            codigo_recibo = recibo.get_codigo()
-            if self.buscar_recibo(codigo_recibo) is None:
-                self.__recibos.append(recibo)
-        else:
-            print("No se generó un recibo.")
-    
-    def guardar_prestamo(self, prestamo:object):
-        codigo_prestamo = prestamo.get_codigo()
-        if self.buscar_prestamo(codigo_prestamo) is None:
-            self.__prestamos.append(prestamo)
+                
+    def resetear_multas(self):
+        
+        # Verificar si hay exactamente 3 multas y todas están en estado "Terminado"
+        if self.__nro_multas == 3 and all(multa is not None and multa.get_estado() == "Terminado" for multa in self.__multas):                            
+            # Eliminar todas las multas
+            self.__multas = np.full((3), fill_value=None, dtype=object)
+            self.__nro_multas = 0
     
     # Metodo de representacion
     

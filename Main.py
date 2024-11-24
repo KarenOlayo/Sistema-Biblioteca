@@ -1,4 +1,5 @@
 from Biblioteca import Biblioteca
+from Recibo import Recibo
 import numpy as np
 import pickle
 import os
@@ -306,14 +307,17 @@ class Main:
                 fecha_publicacion = input("Ingrese el año de publicación: ")
                 origen = input("Ingrese el origen del libro: ")
                 
-                biblioteca.agregar_libro(titulo,codigo_isbn,autor,area_del_conocimiento,genero,nro_paginas,fecha_publicacion,origen)
+                print(biblioteca.agregar_libro(titulo,codigo_isbn,autor,area_del_conocimiento,genero,nro_paginas,fecha_publicacion,origen))
                 
             elif opcion == 2: # Eliminar Libro
                 
                 titulo = input("Ingrese el titulo: ")
                 codigo_isbn = input("Ingrese el codigo ISBN: ")
                 
-                biblioteca.eliminar_libro(titulo, codigo_isbn)
+                if biblioteca.eliminar_libro(titulo, codigo_isbn) == True:
+                    print(f"Libro '{titulo}' '{codigo_isbn}' eliminado exitosamente.")
+                else:
+                    print(f"No se pudo eliminar el libro. '{titulo}' '{codigo_isbn}' no está registrado.")
                 
             elif opcion == 3: # Prestar libro
                 
@@ -322,14 +326,51 @@ class Main:
                 identificacion_lector = input("Ingrese la identificación del lector: ")
                 fecha_prestamo = input("Ingrese la fecha de prestamo en el formato DD/MM/Y: ")
                 
-                biblioteca.prestar_libro(titulo, codigo_isbn, identificacion_lector, fecha_prestamo)
+                resultado = biblioteca.prestar_libro(titulo, codigo_isbn, identificacion_lector, fecha_prestamo)
+                
+                if isinstance(resultado, tuple):
+                    prestamo, recibo = resultado
+                    
+                    print("Préstamo realizado con éxito.")
+                    
+                    visualizacion_prestamo = int(input("""¿Desea ver los detalles del Préstamo?
+1. Si.
+2. No.
+                                          """))
+                    
+                    if visualizacion_prestamo == 1:
+                        print("\nDetalles del Préstamo: \n")
+                        print(prestamo)
+                    
+                    visualizacion_recibo = int(input("""¿Desea visualizar el recibo generado?
+1. Si.
+2. No.                                                     
+                                                     """))
+                    
+                    if visualizacion_recibo == 1:
+                        print("\nRecibo generado: \n")
+                        print(recibo)
+                else:
+                    print(resultado)
                 
             elif opcion == 4: # Renovar Prestamo Libro
                 
                 identificacion_lector = input("Ingrese la identificación del lector: ")
                 codigo_prestamo = input("Ingrese el código del préstamo: ")
                 
-                biblioteca.renovar_prestamo(codigo_prestamo, identificacion_lector)
+                resultado = biblioteca.renovar_prestamo(codigo_prestamo, identificacion_lector)
+                
+                if isinstance(resultado, Recibo):
+                    print("Préstamo renovado exitosamente. ")
+                    visualizacion_recibo = int(input("""¿Desea visualizar el recibo generado?
+1. Si.
+2. No.                                                     
+                                                     """))
+                    
+                    if visualizacion_recibo == 1:
+                        print(recibo)
+                else:
+                    print(resultado)
                 
             elif opcion == 5: # Devolver Libro
                 
@@ -337,14 +378,34 @@ class Main:
                 identificacion_lector = input("Ingrese la identificación del lector: ")
                 fecha_entrega = input("Ingrese la fecha de entrega en el formato DD/MM/Y: ")
                 
-                biblioteca.recibir_libro_devuelto(codigo_prestamo, identificacion_lector, fecha_entrega)
+                resultado = biblioteca.recibir_libro_devuelto(codigo_prestamo, identificacion_lector, fecha_entrega)
                 
+                if isinstance(resultado, Recibo):
+                    print("Libro devuelto exitosamente.")
+                    
+                    visualizacion_recibo = int(input("""¿Desea ver el recibo generado?
+1. Si.
+2. No                                                     
+                                                     """))
+                    
+                    if visualizacion_recibo == 1:
+                        print(recibo)
+                
+                else:
+                    print(resultado)
+                    
             elif opcion == 6: # Buscar libro
                 
                 titulo = input("Ingres el titulo: ")
                 codigo_isbn = input("Ingrese el código ISBN: ")
                 
-                biblioteca.buscar_libro(titulo, codigo_isbn)
+                _, libro = biblioteca.buscar_libro(titulo, codigo_isbn)
+                
+                if libro is not None:
+                    print("Libro encontrado: ")
+                    print(libro)
+                else:
+                    print(f"El libro '{titulo}' '{codigo_isbn}' no está registrado en la Biblioteca.")
                 
             elif opcion == 7: # Listar
                 Main.mostrar_opciones_listar_libros()
@@ -352,7 +413,7 @@ class Main:
                 
                 if opcion_listar == 1: # Listar por Estado
                     estado = input("Ingrese el estado del libro con el que desea listar: ")
-                    biblioteca.listar_por_estado(estado)
+                    lista = biblioteca.listar_por_estado(estado) # devuelve una lista 
                 
                 elif opcion_listar == 2: # Listar por Autor
                     
