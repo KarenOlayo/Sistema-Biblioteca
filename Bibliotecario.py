@@ -1,5 +1,4 @@
 from Persona import Persona
-from datetime import datetime
 from email_validator import validate_email, EmailNotValidError
 
 class Bibliotecario(Persona):
@@ -7,7 +6,6 @@ class Bibliotecario(Persona):
     def __init__(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__identificacion = identificacion
-        self.__email = email
         
         # validacion del correo
         try:
