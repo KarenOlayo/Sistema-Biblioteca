@@ -3,6 +3,7 @@ from Recibo import Recibo
 import numpy as np
 import pickle
 import os
+from DataInicial import AREAS_DEL_CONOCIMIENTO, GENEROS_LITERATURA, GENEROS_NO_LITERATURA, ORIGEN_LIBRO
 
 class Main:
     
@@ -371,14 +372,37 @@ class Main:
             
             if opcion == "1": # Agregar Libro
                 
-                titulo = input("Ingrese el titulo: ")
+                titulo = input("\nIngrese el titulo: ")
                 codigo_isbn = input("Ingrese el codigo ISBN: ")
                 autor = input("Ingrese el primer nombre y primer apellido del autor separados por un espacio: ")
-                area_del_conocimiento = input("Ingrese el área del conocimiento: ")
-                genero = input("Ingrese el género: ")
-                nro_paginas = input("Ingrese el número de páginas: ")
+                
+                print("\nIngrese el área del conocimiento: \n")
+                
+                for area in AREAS_DEL_CONOCIMIENTO:
+                    print(f"- {area}.")
+                        
+                area_del_conocimiento = input("\n: ")
+
+                print("\nIngrese el género: \n")
+                
+                if area_del_conocimiento == "Literatura":
+                    for genero in GENEROS_LITERATURA:
+                        print(f"- {genero}.")
+                    genero = input("\n: ")
+                
+                else:
+                    for genero in GENEROS_NO_LITERATURA:
+                        print(f"- {genero}.")
+                    genero = input("\n: ")
+                           
+                nro_paginas = input("\nIngrese el número de páginas: ")
                 fecha_publicacion = input("Ingrese el año de publicación: ")
-                origen = input("Ingrese el origen del libro: ")
+                
+                print("\nIngrese el origen: \n")
+                
+                for origen in ORIGEN_LIBRO:
+                    print(f"- {origen}.")
+                origen = input("\n: ")
                 
                 print(biblioteca.agregar_libro(titulo,codigo_isbn,autor,area_del_conocimiento,genero,nro_paginas,fecha_publicacion,origen))
                 

@@ -37,7 +37,7 @@ TIPOS_DE_RECIBOS = [
 ]
 
 ORIGEN_LIBRO = [
-    "Donacion",
+    "Donación",
     "Adquirido por la Biblioteca"
 ]
 

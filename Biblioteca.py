@@ -42,7 +42,7 @@ class Biblioteca:
         self.agregar_estante("Ciencias Humanas")
         self.agregar_estante("Ciencias Políticas")
         self.agregar_estante("Literatura")
-        
+                
     # Metodos Accesores
 
     def get_nombre(self):
@@ -151,7 +151,7 @@ class Biblioteca:
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         
         if isinstance(fecha_nacimiento, str):
-            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d/%m/%Y")
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d/%m/%Y").date()
         
         hoy = datetime.now()
         
@@ -635,4 +635,3 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
             if self.__libros[libro].get_anio_publicacion() == anio_publicacion:
                 listado_libros.append(self.__libros[libro])
         return listado_libros
-    
