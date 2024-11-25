@@ -23,6 +23,15 @@ class Recibo:
     def get_informacion(self):
         return self.__informacion
     
+    def get_tipo(self):
+        return self.__tipo
+    
+    def get_lector(self):
+        return self.__lector
+    
+    def get_fecha(self):
+        return self.__fecha
+            
     def __repr__(self):
         return f"""Biblioteca: {self.__nombre_biblioteca}
 Recibo N° {self.__codigo}

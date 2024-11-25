@@ -117,8 +117,8 @@ class Lector(Persona):
             if self.buscar_recibo(codigo_recibo) is None:
                 self.__recibos.append(recibo)
         else:
-            print("No se generó un recibo. No se pudo guardar en la lista del lector.")
-    
+            print("No se generó un recibo. Por tanto, no se pudo guardar en la lista del lector.")
+
     def guardar_prestamo(self, prestamo:object):
         codigo_prestamo = prestamo.get_codigo()
         if self.buscar_prestamo(codigo_prestamo) is None:
