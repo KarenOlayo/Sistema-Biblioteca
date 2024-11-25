@@ -119,7 +119,7 @@ class Biblioteca:
     def agregar_bibliotecario(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         
         if isinstance(fecha_nacimiento, str):
-            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d-%m-%Y")
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d/%m/%Y")
         
         hoy = datetime.now()
         
@@ -151,7 +151,7 @@ class Biblioteca:
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         
         if isinstance(fecha_nacimiento, str):
-            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d-%m-%Y")
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d/%m/%Y")
         
         hoy = datetime.now()
         
@@ -304,6 +304,9 @@ class Biblioteca:
                         prestamo = self.generar_prestamo(lector, libro, fecha_prestamo)
                         recibo = self.generar_recibo(prestamo, lector)
                         
+                        if recibo is None or isinstance(recibo, str):
+                            print("Error al generar el recibo: ", recibo)
+                        
                         self.guardar_prestamo(prestamo)
                         self.guardar_recibo(recibo)
                                         
@@ -367,7 +370,7 @@ class Biblioteca:
             
             if lector is not None:
                 
-                if datetime.strptime(fecha_entrega, '%d-%m-%Y').date() >= fecha_prestamo:
+                if datetime.strptime(fecha_entrega, '%d/%m/%Y').date() >= fecha_prestamo:
                     
                     if prestamo.get_lector().get_identificacion() == identificacion_lector:
                         libro = prestamo.get_libro()
@@ -524,28 +527,23 @@ class Biblioteca:
             
             estado_prestamo = objeto.get_estado()
             
-            if estado_prestamo != "Atrasado":
-            
-                if estado_prestamo == "Vigente": # Corresponde a la realizacion de un prestamo
-        
-                    informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
+            if estado_prestamo == "Vigente": # Corresponde a la realizacion de un prestamo
+    
+                informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
 Titulo Libro: '{objeto.get_libro().get_titulo()}'
 Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
 Estado Préstamo: {objeto.get_estado()}
 Fecha Préstamo: {objeto.get_fecha_prestamo()}
 Fecha Devolución: {objeto.get_fecha_devolucion()}"""
 
-                    recibo = Recibo(nombre_biblioteca, codigo_recibo, "Prestamo de Libro" ,fecha_recibo, lector, informacion)
+                recibo = Recibo(nombre_biblioteca, codigo_recibo, "Prestamo de Libro" ,fecha_recibo, lector, informacion)
 
-                    if recibo is not None:
-                        self.__nro_recibos_biblioteca += 1
-                        return recibo
-                    else:
-                        return "No se generó el recibo."
+                self.__nro_recibos_biblioteca += 1
+                return recibo
                 
-                elif estado_prestamo == "Renovado": # Corresponde a la renovacion del prestamo de un libro
-                
-                    informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
+            elif estado_prestamo == "Renovado": # Corresponde a la renovacion del prestamo de un libro
+            
+                informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
 Titulo Libro: '{objeto.get_libro().get_titulo()}'
 Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
 Estado Préstamo: {objeto.get_estado()}
@@ -554,18 +552,15 @@ Fecha Préstamo: {objeto.get_fecha_prestamo()}
 Fecha Devolución Inicial: {objeto.get_fecha_prestamo()+timedelta(days=30)}
 Nueva Fecha Devolución: {objeto.get_fecha_devolucion()}"""
 
-                    recibo = Recibo(nombre_biblioteca, codigo_recibo,"Renovacion de Prestamo de Libro", fecha_recibo, lector,informacion)                    
-                    
-                    if recibo is not None:
-                        self.__nro_recibos_biblioteca += 1
-                        return recibo
-                    else:
-                        return "No se generó el recibo."
-
-                else: # Estado == 'Terminado' corresponde a la devolucion de un prestamo
-                        
-                    informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
-Titulo Libro: '{objeto.get_libro().get_titulo()}'
+                recibo = Recibo(nombre_biblioteca, codigo_recibo,"Renovacion de Prestamo de Libro", fecha_recibo, lector,informacion)                    
+                
+                self.__nro_recibos_biblioteca += 1
+                return recibo
+                
+            elif estado_prestamo == "Terminado": # Corresponde a la devolucion de un prestamo
+                
+                informacion = f"""Codigo Préstamo: {objeto.get_codigo()}
+Titulo Libro: {objeto.get_libro().get_titulo()}
 Codigo ISBN: {objeto.get_libro().get_codigo_isbn()}
 Estado Préstamo: {objeto.get_estado()}
 No. Renovaciones Préstamo: {objeto.get_nro_renovaciones()}
@@ -575,14 +570,11 @@ Fecha Entrega: {objeto.get_fecha_entrega()}
 Duración Préstamo: {objeto.get_dias_duracion()} dias
 Dias Retraso: {int(self.calcular_dias_retraso(objeto))} dias
 Multa: {objeto.comprobar_multa_asignada()}"""
-                    
-                    recibo = Recibo(nombre_biblioteca, codigo_recibo, "Devolucion de Libro", fecha_recibo,lector,informacion)
-                    
-                    if recibo is not None:
-                        self.__nro_recibos_biblioteca += 1
-                        return recibo
-                    else:
-                        return "No se generó el recibo."       
+                
+                recibo = Recibo(nombre_biblioteca, codigo_recibo, "Devolucion de Libro", fecha_recibo, lector, informacion)
+                
+                self.__nro_recibos_biblioteca += 1
+                return recibo 
                 
         elif isinstance(objeto, Multa):
 
@@ -595,11 +587,9 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
 
             recibo = Recibo(nombre_biblioteca, codigo_recibo, "Multa", fecha_recibo, lector, informacion)
                             
-            if recibo is not None:
-                self.__nro_recibos_biblioteca += 1
-                return recibo
-            else:
-                return "No se generó el recibo."
+            self.__nro_recibos_biblioteca += 1
+            return recibo
+            
         else: 
             return "El objeto no es una instancia de Préstamo o Multa."
 

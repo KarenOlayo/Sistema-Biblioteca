@@ -23,6 +23,11 @@ class Main:
             biblioteca = Biblioteca("Babel")
             print("Biblioteca creada exitosamente.")
             Main.guardar_biblioteca(biblioteca)
+            
+            with open(Main.ARCHIVO_BIBLIOTECA, 'rb') as archivo:
+                biblioteca = pickle.load(archivo)
+                print("Biblioteca cargada exitosamente. ")
+                return biblioteca
         
     def guardar_biblioteca(biblioteca:Biblioteca):
         
@@ -77,9 +82,10 @@ class Main:
 8. Listar Autores Registrados.
 9. Listar Préstamos Realizados.
 10. Listar Multas Generadas.
-11. Listar Estantes Biblioteca.
-12. Cambiar Nombre Bilioteca.
-13. Volver al Menú Principal.""")
+11. Listar Recibos Generados.
+12. Listar Estantes Biblioteca.
+13. Cambiar Nombre Bilioteca.
+14. Volver al Menú Principal.""")
     
     def mostrar_menu_libros():
         print("""\n---------MENÚ LIBROS---------\n
@@ -312,8 +318,27 @@ class Main:
                         print(formato)
                 else:
                     print("No hay Multas registradas.")
-                    
-            elif opcion == "11": # Listar estantes
+            
+            elif opcion == "11": # Listar recibos generados
+                
+                recibos = biblioteca.get_recibos()
+                
+                recibos_validos = [recibo for recibo in recibos if recibo is not None]
+                
+                if len(recibos_validos) >= 1:
+                    print("\nLos Recibos registrados son: \n")
+                    for recibo in recibos_validos:
+                        codigo = recibo.get_codigo()
+                        identificacion_lector = recibo.get_lector().get_identificacion()
+                        tipo = recibo.get_tipo()
+                        fecha = recibo.get_fecha()
+                            
+                        formato = f"< Código: {codigo} | Lector: {identificacion_lector} | Tipo: {tipo} | Fecha: {fecha} >"
+                        print(formato)
+                else:
+                    print("No se han generado recibos.")
+                
+            elif opcion == "12": # Listar estantes
                 
                 estantes = biblioteca.get_estantes()
                 
@@ -324,14 +349,14 @@ class Main:
                 else:
                     print("La biblioteca no tiene estantes.")
 
-            elif opcion == "12": # Cambiar nombre
+            elif opcion == "13": # Cambiar nombre
                 
                 nombre_anterior = biblioteca.get_nombre()
                 nuevo_nombre = input("Ingrese el nuevo nombre de la Biblioteca: ")
                 biblioteca.set_nombre(nuevo_nombre)
                 print(f"Nombre cambiado exitosamente. Nombre anterior: '{nombre_anterior}'. Nuevo Nombre: '{nuevo_nombre}'")
             
-            elif opcion == "13": # Volver al menu principal
+            elif opcion == "14": # Volver al menu principal
                 break
             
             else:
@@ -372,22 +397,22 @@ class Main:
                 titulo = input("Ingrese el titulo: ")
                 codigo_isbn = input("Ingrese el codigo ISBN: ")
                 identificacion_lector = input("Ingrese la identificación del lector: ")
-                fecha_prestamo = input("Ingrese la fecha de prestamo en el formato DD-MM-AA: ")
+                fecha_prestamo = input("Ingrese la fecha de prestamo en el formato DD/MM/AAAA: ")
                 
                 resultado = biblioteca.prestar_libro(titulo, codigo_isbn, identificacion_lector, fecha_prestamo)
-                
+                                
                 if isinstance(resultado, tuple):
                     prestamo, recibo = resultado
                     
                     print("Préstamo realizado con éxito.")
-                    
-                    visualizacion_prestamo = input("""¿Desea ver los detalles del Préstamo? Si/No""")
-                    
+                
+                    visualizacion_prestamo = input("""¿Desea ver los detalles del Préstamo? Si/No: """)
+                
                     if visualizacion_prestamo == "Si":
                         print(prestamo)
-                    
-                    visualizacion_recibo = input("""¿Desea visualizar el recibo generado? Si/No""")
-                    
+                
+                    visualizacion_recibo = input("""¿Desea visualizar el recibo generado? Si/No: """)
+                 
                     if visualizacion_recibo == "Si":
                         print(recibo)
                 else:
@@ -405,7 +430,7 @@ class Main:
                     visualizacion_recibo = input("""¿Desea visualizar el recibo generado? Si/No""")
                     
                     if visualizacion_recibo == "Si":
-                        print(recibo)
+                        print(resultado)
                 else:
                     print(resultado)
                 
@@ -413,7 +438,7 @@ class Main:
                 
                 codigo_prestamo = input("Ingrese el código del préstamo del libro a devolver: ")
                 identificacion_lector = input("Ingrese la identificación del lector: ")
-                fecha_entrega = input("Ingrese la fecha de entrega en el formato DD-MM-AA: ")
+                fecha_entrega = input("Ingrese la fecha de entrega en el formato DD/MM/AAAA: ")
                 
                 resultado = biblioteca.recibir_libro_devuelto(codigo_prestamo, identificacion_lector, fecha_entrega)
                 
@@ -531,7 +556,7 @@ class Main:
                 nombre = input("Ingrese el nombre del lector: ")
                 apellido = input("Ingrese el apellido del lector: ")
                 identificacion = input("Ingrese la identificación del lector: ")
-                fecha_nacimiento = input("Ingrese la fecha de nacimiento del lector en el formato DD-MM-AA: ")
+                fecha_nacimiento = input("Ingrese la fecha de nacimiento del lector en el formato DD/MM-AAAA: ")
                 email = input("Ingrese el correo electrónico del lector: ")
                 
                 if biblioteca.agregar_lector(nombre, apellido, fecha_nacimiento, identificacion, email) == True:
@@ -669,7 +694,7 @@ class Main:
                 
                 nombre= input("Ingrese el nombre del bibliotecario: ")
                 apellido=input("Ingrese el apellido del bibliotecario: ")
-                fecha_nacimiento=input("Ingrese la fecha de nacimiento del bibliotecario en el formato DD-MM-AA: ")
+                fecha_nacimiento=input("Ingrese la fecha de nacimiento del bibliotecario en el formato DD/MM/AAAA: ")
                 identificacion= input("Ingrese la identificación del bibliotecario: ")
                 email= input("Ingrese el email del bibliotecario: ")  
                 
@@ -714,8 +739,8 @@ class Main:
                 
                 nombre = input("Ingrese el nombre del autor: ")
                 apellido = input("Ingrese el apellido del autor: ")
-                fecha_nacimiento = input("Ingrese la fecha de nacimiento del autor en el formato DD-MM-AA: ")
-                fecha_fallecimiento = input("Ingrese la fecha de fallecimiento del autor en el formato DD-MM-AA: ")
+                fecha_nacimiento = input("Ingrese la fecha de nacimiento del autor en el formato DD/MM-AAAA: ")
+                fecha_fallecimiento = input("Ingrese la fecha de fallecimiento del autor en el formato DD/MM/AAAA: ")
                 pais_origen = input("Ingrese el pais de origen del autor: ")
                 
                 if biblioteca.agregar_autor(nombre,apellido,fecha_nacimiento,fecha_fallecimiento,pais_origen) == True:

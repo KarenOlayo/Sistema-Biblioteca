@@ -9,8 +9,8 @@ class Prestamo:
         self.__codigo = codigo
         self.__lector = lector
         self.__libro = libro
-        self.__fecha_prestamo = datetime.strptime(fecha_prestamo, '%d-%m-%Y').date()
-        self.__fecha_devolucion = datetime.strptime(fecha_prestamo, '%d-%m-%Y').date() + timedelta(days=30)
+        self.__fecha_prestamo = datetime.strptime(fecha_prestamo, '%d/%m/%Y').date()
+        self.__fecha_devolucion = datetime.strptime(fecha_prestamo, '%d/%m/%Y').date() + timedelta(days=30)
         self.__fecha_entrega = None 
         self.__dias_duracion = None
         self.calcular_dias_duracion()
@@ -72,10 +72,10 @@ class Prestamo:
     # Metodos modificadores
     
     def set_fecha_devolucion(self, nueva_fecha_devolucion):
-        self.__fecha_devolucion = datetime.strptime(nueva_fecha_devolucion, '%d-%m-%Y').date()
+        self.__fecha_devolucion = nueva_fecha_devolucion
     
     def set_fecha_entrega(self, fecha_entrega):
-        self.__fecha_entrega = datetime.strptime(fecha_entrega, '%d-%m-%Y').date()
+        self.__fecha_entrega = datetime.strptime(fecha_entrega, '%d/%m/%Y').date()
     
     def set_multa(self, multa:object):
         from Multa import Multa
