@@ -5,11 +5,16 @@ from email_validator import validate_email, EmailNotValidError
 
 class Lector(Persona):
     
-    def  __init__(self, nombre=str, apellido=str, fecha_nacimiento=datetime.date, identificacion=str, email=str):
+    def  __init__(self, nombre:str, apellido:str, fecha_nacimiento:datetime.date, identificacion:str, email:str):
         
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__identificacion = identificacion
-        self.__email = email
+        
+        try:
+            validacion = validate_email(email)
+            self.__email = validacion.email  # se guarda el correo validado y normalizado
+        except EmailNotValidError as e:
+            raise ValueError(f"Correo no válido: {e}")
         
         self.__prestamos = [] #instancias de Prestamo , funciona como un historial
         self.__recibos = []
@@ -20,12 +25,6 @@ class Lector(Persona):
         self.__multas = np.full((3),fill_value=None, dtype=object)
         self.__nro_multas = 0
                 
-        # validacion del correo
-        try:
-            validacion = validate_email(email)
-            self.__email = validacion.email  # se guarda el correo validado y normalizado
-        except EmailNotValidError as e:
-            raise ValueError(f"Correo no válido: {e}")
         
     # Metodos Accesores
 
@@ -34,15 +33,9 @@ class Lector(Persona):
     
     def get_email(self):
         return self.__email
-    
-    def get_historial_prestamos(self):
-        return self.__historial_prestamos
 
     def get_prestamos_vigentes(self):
         return self.__prestamos_vigentes
-    
-    def get_multas_vigentes(self):
-        return self.__multas_vigentes
     
     def get_prestamos(self):
         return self.__prestamos

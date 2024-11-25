@@ -55,7 +55,4 @@ class Estante:
     # Metodo de representacion
     
     def __repr__(self):
-        return f"""
-Estante de '{self.__area_del_conocimiento}'
-No. Libros: '{self.__nro_libros_estante}'
-"""
+        return f"<Estante de '{self.__area_del_conocimiento}' | No. Libros: '{self.__nro_libros_estante}'>"

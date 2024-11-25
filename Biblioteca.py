@@ -36,7 +36,13 @@ class Biblioteca:
         
         self.__prestamos = []
         self.__nro_prestamos_biblioteca = 0
-                
+
+        self.agregar_estante("Ciencias Sociales")
+        self.agregar_estante("Ciencias Exactas")
+        self.agregar_estante("Ciencias Humanas")
+        self.agregar_estante("Ciencias Políticas")
+        self.agregar_estante("Literatura")
+        
     # Metodos Accesores
 
     def get_nombre(self):
@@ -112,10 +118,18 @@ class Biblioteca:
     
     def agregar_bibliotecario(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         
-        if self.buscar_bibliotecario(identificacion) == None:
-            bibliotecario = Bibliotecario(nombre, apellido, fecha_nacimiento, identificacion, email)
-            self.__bibliotecarios.append(bibliotecario)
-            return True
+        if isinstance(fecha_nacimiento, str):
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d-%m-%Y")
+        
+        hoy = datetime.now()
+        
+        edad_lector = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+        
+        if edad_lector >= 18:
+            if self.buscar_bibliotecario(identificacion) == None:
+                bibliotecario = Bibliotecario(nombre, apellido, fecha_nacimiento, identificacion, email)
+                self.__bibliotecarios.append(bibliotecario)
+                return True
         return False
     
     def eliminar_bibliotecario(self, identificacion):
@@ -136,10 +150,18 @@ class Biblioteca:
     
     def agregar_lector(self, nombre, apellido, fecha_nacimiento, identificacion, email):
         
-        if self.buscar_lector(identificacion) == None :
-            lector = Lector(nombre, apellido, fecha_nacimiento, identificacion, email)
-            self.__lectores.append(lector)
-            return True
+        if isinstance(fecha_nacimiento, str):
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%d-%m-%Y")
+        
+        hoy = datetime.now()
+        
+        edad_lector = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+        
+        if edad_lector >= 18:
+            if self.buscar_lector(identificacion) == None :
+                lector = Lector(nombre, apellido, fecha_nacimiento, identificacion, email)
+                self.__lectores.append(lector)
+                return True
         return False
     
     def eliminar_lector(self, identificacion):
@@ -345,7 +367,7 @@ class Biblioteca:
             
             if lector is not None:
                 
-                if datetime.strptime(fecha_entrega, '%d/%m/%Y').date() >= fecha_prestamo:
+                if datetime.strptime(fecha_entrega, '%d-%m-%Y').date() >= fecha_prestamo:
                     
                     if prestamo.get_lector().get_identificacion() == identificacion_lector:
                         libro = prestamo.get_libro()
@@ -585,15 +607,14 @@ Fecha Fin: {objeto.get_fecha_fin()}"""
     
     def listar_por_estado(self, estado):
         
-        if estado == "Disponible" :
-            return self.get_libros_disponibles()
-            
-        elif estado == "Prestado" :
-            return self.get_libros_prestados()
+        listado_libros = []
         
-        else:
-            return f"Estado '{estado}' no válido."
-    
+        for libro in range(self.__nro_libros):
+            if self.__libros[libro] is not None:
+                if self.__libros[libro].get_estado() == estado:
+                    listado_libros.append(self.__libros[libro])
+        return listado_libros
+        
     def listar_por_autor(self, nombre, apellido):
         
         listado_libros = []

@@ -6,7 +6,7 @@ class Autor(Persona):
     
     PAISES = dict(countries_for_language('es')).values()
     
-    def __init__(self, nombre=str, apellido=str, fecha_nacimiento=datetime.date, fecha_fallecimiento=datetime.date, pais_origen:str=None):
+    def __init__(self, nombre:str, apellido:str, fecha_nacimiento:datetime.date, fecha_fallecimiento:datetime.date=None, pais_origen:str=None):
         
         super().__init__(nombre, apellido, fecha_nacimiento)
         self.__fecha_fallecimiento = fecha_fallecimiento
@@ -23,12 +23,6 @@ class Autor(Persona):
         
     def get_fecha_fallecimiento(self):
         return self.__fecha_fallecimiento
-
-    def get_obras_literarias(self):
-        return self.__obras_literarias
-    
-    def get_nombre_completo(self):
-        return f"{self.get_nombre()} {self.get_apellido()}"
 
     # Metodos Modificadores
         

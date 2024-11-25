@@ -2,10 +2,10 @@ import datetime
 
 class Persona:
     
-    def __init__(self, nombre, apellido, fecha_nacimiento=datetime.date):
+    def __init__(self, nombre, apellido, fecha_nacimiento:datetime.date):
         self.__nombre = nombre
         self.__apellido = apellido
-        self.__fecha_nacimiento = fecha_nacimiento
+        self.__fecha_nacimiento = datetime.strptime(fecha_nacimiento, '%d-%m-%Y').date()
     
     def get_nombre(self):
         return self.__nombre
