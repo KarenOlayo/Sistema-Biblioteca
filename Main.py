@@ -3,7 +3,7 @@ from Recibo import Recibo
 import numpy as np
 import pickle
 import os
-from DataInicial import AREAS_DEL_CONOCIMIENTO, GENEROS_LITERATURA, GENEROS_NO_LITERATURA, ORIGEN_LIBRO
+from DataInicial import AREAS_DEL_CONOCIMIENTO, GENEROS_LITERATURA, GENEROS_NO_LITERATURA, ORIGEN_LIBRO, ESTADO_LIBRO
 
 class Main:
     
@@ -510,7 +510,12 @@ class Main:
                         print(formato)
                 
                 if opcion_listar == "1": # Listar por Estado
-                    estado = input("Ingrese el estado del libro con el que desea listar: ")
+                    print("Ingrese el estado del libro con el que desea listar: ")
+                    
+                    for estado in ESTADO_LIBRO:
+                        print(f"- {estado}")
+                    
+                    estado = input("\n : ")
                     lista_libros = biblioteca.listar_por_estado(estado) # devuelve una lista 
                     
                     if len(lista_libros) >= 1:
@@ -531,7 +536,12 @@ class Main:
                 
                 elif opcion_listar == "3": # Listar por area del conocimiento
                     
-                    area_del_conocimiento = input("Ingrese el área del conocimiento: ")
+                    print("Ingrese el área del conocimiento: ")
+                    
+                    for area in AREAS_DEL_CONOCIMIENTO:
+                        print(f"- {area}")
+                        
+                    area_del_conocimiento = input("\n: ")
                     lista_libros = biblioteca.listar_por_area_del_conocimiento(area_del_conocimiento)
                 
                     if len(lista_libros) >= 1:
@@ -541,7 +551,15 @@ class Main:
                     
                 elif opcion_listar == "4": # Listar por genero
                     
-                    genero = input("Ingrese el género: ")
+                    print("\nIngrese el género: \n")
+                    
+                    GENEROS = GENEROS_LITERATURA + GENEROS_NO_LITERATURA
+                    
+                    for genero in GENEROS:
+                        print(f"- {genero}")
+                    
+                    genero = input("\n: ")
+                    
                     lista_libros = biblioteca.listar_por_genero(genero)
                     
                     if len(lista_libros) >= 1:
