@@ -552,7 +552,7 @@ Fecha Devolución: {objeto.get_fecha_devolucion()}
 Fecha Entrega: {objeto.get_fecha_entrega()}
 Duración Préstamo: {objeto.get_dias_duracion()} dias
 Dias Retraso: {int(self.calcular_dias_retraso(objeto))} dias
-Multa: {objeto.comprobar_existencia_multa()}"""
+Multa: {objeto.comprobar_multa_asignada()}"""
                     
                     recibo = Recibo(nombre_biblioteca, codigo_recibo, "Devolucion de Libro", fecha_recibo,lector,informacion)
                     

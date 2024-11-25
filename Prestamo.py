@@ -89,7 +89,7 @@ class Prestamo:
     def incrementar_nro_renovaciones(self):
         self.__nro_renovaciones += 1    
     
-    def comprobar_existencia_multa(self):
+    def comprobar_multa_asignada(self): #comprobar existencia multa
         if self.__multa is not None:
             codigo = self.__multa.get_codigo()
             dias_penalizacion = self.__multa.get_dias_penalizacion()
@@ -102,7 +102,11 @@ Fecha Inicio: {fecha_inicio}
 Fecha Fin: {fecha_fin}
 """
         return "No"
-        
+    
+    def get_codigo_multa_asignada(self):
+        if self.__multa is not None:
+            return self.__multa.get_codigo()
+        return "No."
         
     # Metodo repr
     
@@ -118,5 +122,5 @@ Fecha Devolución: '{self.__fecha_devolucion}'
 Fecha Entrega: '{self.__fecha_entrega}'
 Duración: '{self.__dias_duracion} días.'
 Estado: '{self.__estado}'
-Multa: '{self.__multa.get_codigo()}'
+Multa: '{self.get_codigo_multa_asignada()}'
 """
